@@ -1,0 +1,541 @@
+{
+  "suggestions": [
+    { "id": 1, "name": "Rio de Janeiro, RJ", "type": "city", "country": "Brasil" },
+    { "id": 2, "name": "São Paulo, SP", "type": "city", "country": "Brasil" },
+    { "id": 3, "name": "Florianópolis, SC", "type": "city", "country": "Brasil" },
+    { "id": 4, "name": "Porto de Galinhas, PE", "type": "beach", "country": "Brasil" },
+    { "id": 5, "name": "Gramado, RS", "type": "city", "country": "Brasil" },
+    { "id": 6, "name": "Fernando de Noronha, PE", "type": "island", "country": "Brasil" },
+    { "id": 7, "name": "Campos do Jordão, SP", "type": "city", "country": "Brasil" },
+    { "id": 8, "name": "Jericoacoara, CE", "type": "beach", "country": "Brasil" },
+    { "id": 9, "name": "Bonito, MS", "type": "nature", "country": "Brasil" },
+    { "id": 10, "name": "Salvador, BA", "type": "city", "country": "Brasil" }
+  ],
+  "hotels": [
+    {
+      "id": 1,
+      "name": "Hotel Copacabana Palace",
+      "slug": "copacabana-palace",
+      "destination": "Rio de Janeiro, RJ",
+      "description": "Hotel icônico de luxo em frente à praia de Copacabana, com arquitetura art déco e serviço impecável.",
+      "rating": 4.8,
+      "reviewCount": 2847,
+      "pricePerNight": 1200,
+      "currency": "BRL",
+      "propertyType": "hotel",
+      "address": "Av. Atlântica, 1702 - Copacabana, Rio de Janeiro - RJ",
+      "latitude": -22.9683,
+      "longitude": -43.1792,
+      "images": [
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+        "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800",
+        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400",
+      "amenities": ["wifi", "pool", "spa", "restaurant", "gym", "parking", "bar", "room_service"],
+      "checkInTime": "15:00",
+      "checkOutTime": "12:00",
+      "cancellationPolicy": "free",
+      "availableRooms": 12,
+      "featured": true
+    },
+    {
+      "id": 2,
+      "name": "Pousada Villa Rossa",
+      "slug": "villa-rossa",
+      "destination": "Rio de Janeiro, RJ",
+      "description": "Pousada charmosa no coração de Santa Teresa, com vista panorâmica da cidade e decoração contemporânea.",
+      "rating": 4.6,
+      "reviewCount": 892,
+      "pricePerNight": 450,
+      "currency": "BRL",
+      "propertyType": "pousada",
+      "address": "Rua Almirante Alexandrino, 660 - Santa Teresa, Rio de Janeiro - RJ",
+      "latitude": -22.9152,
+      "longitude": -43.1886,
+      "images": [
+        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
+        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800",
+        "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400",
+      "amenities": ["wifi", "pool", "breakfast", "parking"],
+      "checkInTime": "14:00",
+      "checkOutTime": "11:00",
+      "cancellationPolicy": "moderate",
+      "availableRooms": 3,
+      "featured": false
+    },
+    {
+      "id": 3,
+      "name": "Grand Mercure São Paulo Ibirapuera",
+      "slug": "grand-mercure-ibirapuera",
+      "destination": "São Paulo, SP",
+      "description": "Hotel moderno próximo ao Parque Ibirapuera, ideal para negócios e lazer.",
+      "rating": 4.5,
+      "reviewCount": 1523,
+      "pricePerNight": 380,
+      "currency": "BRL",
+      "propertyType": "hotel",
+      "address": "Rua Sena Madureira, 1355 - Vila Mariana, São Paulo - SP",
+      "latitude": -23.5935,
+      "longitude": -46.6573,
+      "images": [
+        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+        "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800",
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400",
+      "amenities": ["wifi", "gym", "restaurant", "bar", "parking", "business_center"],
+      "checkInTime": "15:00",
+      "checkOutTime": "12:00",
+      "cancellationPolicy": "free",
+      "availableRooms": 25,
+      "featured": true
+    },
+    {
+      "id": 4,
+      "name": "Costão do Santinho Resort",
+      "slug": "costao-santinho",
+      "destination": "Florianópolis, SC",
+      "description": "Resort all-inclusive em frente ao mar, com parque aquático e diversas opções de lazer.",
+      "rating": 4.7,
+      "reviewCount": 3421,
+      "pricePerNight": 890,
+      "currency": "BRL",
+      "propertyType": "resort",
+      "address": "Rod. Vereador Onildo Lemos, 2505 - Santinho, Florianópolis - SC",
+      "latitude": -27.4151,
+      "longitude": -48.4010,
+      "images": [
+        "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800",
+        "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=800",
+        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+        "https://images.unsplash.com/photo-1570213489059-0aac6626cade?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400",
+      "amenities": ["wifi", "pool", "spa", "restaurant", "gym", "parking", "beach_access", "kids_club"],
+      "checkInTime": "16:00",
+      "checkOutTime": "12:00",
+      "cancellationPolicy": "moderate",
+      "availableRooms": 8,
+      "featured": true
+    },
+    {
+      "id": 5,
+      "name": "Hotel Unique",
+      "slug": "hotel-unique",
+      "destination": "São Paulo, SP",
+      "description": "Hotel design com arquitetura única em formato de barco, rooftop bar e gastronomia premiada.",
+      "rating": 4.9,
+      "reviewCount": 1876,
+      "pricePerNight": 1500,
+      "currency": "BRL",
+      "propertyType": "hotel",
+      "address": "Av. Brigadeiro Luís Antônio, 4700 - Jardim Paulista, São Paulo - SP",
+      "latitude": -23.5934,
+      "longitude": -46.6784,
+      "images": [
+        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
+        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800",
+        "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400",
+      "amenities": ["wifi", "pool", "spa", "restaurant", "gym", "bar", "room_service", "valet"],
+      "checkInTime": "15:00",
+      "checkOutTime": "12:00",
+      "cancellationPolicy": "strict",
+      "availableRooms": 2,
+      "featured": true
+    },
+    {
+      "id": 6,
+      "name": "Pousada Laguna",
+      "slug": "pousada-laguna",
+      "destination": "Florianópolis, SC",
+      "description": "Pousada aconchegante perto da Lagoa da Conceição, ambiente familiar e tranquilo.",
+      "rating": 4.3,
+      "reviewCount": 456,
+      "pricePerNight": 280,
+      "currency": "BRL",
+      "propertyType": "pousada",
+      "address": "Rua das Gaivotas, 123 - Lagoa da Conceição, Florianópolis - SC",
+      "latitude": -27.5969,
+      "longitude": -48.4620,
+      "images": [
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800",
+        "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400",
+      "amenities": ["wifi", "breakfast", "parking"],
+      "checkInTime": "14:00",
+      "checkOutTime": "11:00",
+      "cancellationPolicy": "free",
+      "availableRooms": 5,
+      "featured": false
+    },
+    {
+      "id": 7,
+      "name": "Hotel Fasano Rio",
+      "slug": "fasano-rio",
+      "destination": "Rio de Janeiro, RJ",
+      "description": "Luxo absoluto em Ipanema, com design sofisticado e gastronomia italiana autêntica.",
+      "rating": 4.9,
+      "reviewCount": 2103,
+      "pricePerNight": 1800,
+      "currency": "BRL",
+      "propertyType": "hotel",
+      "address": "Av. Vieira Souto, 80 - Ipanema, Rio de Janeiro - RJ",
+      "latitude": -22.9838,
+      "longitude": -43.1970,
+      "images": [
+        "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800",
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800",
+        "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=400",
+      "amenities": ["wifi", "pool", "spa", "restaurant", "gym", "bar", "room_service", "concierge"],
+      "checkInTime": "15:00",
+      "checkOutTime": "12:00",
+      "cancellationPolicy": "strict",
+      "availableRooms": 1,
+      "featured": true
+    },
+    {
+      "id": 8,
+      "name": "Business Hotel Center",
+      "slug": "business-center",
+      "destination": "São Paulo, SP",
+      "description": "Hotel econômico no centro financeiro, ideal para viagens de negócios.",
+      "rating": 4.0,
+      "reviewCount": 789,
+      "pricePerNight": 220,
+      "currency": "BRL",
+      "propertyType": "hotel",
+      "address": "Rua Líbero Badaró, 377 - Centro, São Paulo - SP",
+      "latitude": -23.5475,
+      "longitude": -46.6361,
+      "images": [
+        "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=800",
+        "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=400",
+      "amenities": ["wifi", "breakfast", "business_center"],
+      "checkInTime": "14:00",
+      "checkOutTime": "11:00",
+      "cancellationPolicy": "free",
+      "availableRooms": 18,
+      "featured": false
+    }
+  ],
+  "rooms": [
+    {
+      "id": 1,
+      "hotelId": 1,
+      "name": "Suíte Deluxe Ocean View",
+      "description": "Suíte espaçosa com vista para o mar, varanda privativa e banheira de hidromassagem.",
+      "size": 45,
+      "maxGuests": 3,
+      "beds": [
+        { "type": "king", "quantity": 1 }
+      ],
+      "pricePerNight": 1200,
+      "amenities": ["ocean_view", "balcony", "bathtub", "minibar", "safe", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800",
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800"
+      ],
+      "available": 8
+    },
+    {
+      "id": 2,
+      "hotelId": 1,
+      "name": "Quarto Standard",
+      "description": "Quarto confortável com decoração clássica e todas as comodidades necessárias.",
+      "size": 28,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "queen", "quantity": 1 }
+      ],
+      "pricePerNight": 800,
+      "amenities": ["city_view", "minibar", "safe", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800"
+      ],
+      "available": 4
+    },
+    {
+      "id": 3,
+      "hotelId": 2,
+      "name": "Quarto com Vista",
+      "description": "Quarto aconchegante com vista panorâmica da cidade e terraço privativo.",
+      "size": 22,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "queen", "quantity": 1 }
+      ],
+      "pricePerNight": 450,
+      "amenities": ["city_view", "terrace", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800"
+      ],
+      "available": 3
+    },
+    {
+      "id": 4,
+      "hotelId": 3,
+      "name": "Executive Room",
+      "description": "Quarto executivo moderno com área de trabalho e acesso ao lounge.",
+      "size": 32,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "king", "quantity": 1 }
+      ],
+      "pricePerNight": 380,
+      "amenities": ["city_view", "desk", "minibar", "safe", "aircon", "lounge_access"],
+      "images": [
+        "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800"
+      ],
+      "available": 15
+    },
+    {
+      "id": 5,
+      "hotelId": 3,
+      "name": "Suite Panorâmica",
+      "description": "Suíte ampla com sala de estar separada e vista 360° da cidade.",
+      "size": 55,
+      "maxGuests": 4,
+      "beds": [
+        { "type": "king", "quantity": 1 },
+        { "type": "sofa_bed", "quantity": 1 }
+      ],
+      "pricePerNight": 650,
+      "amenities": ["city_view", "living_room", "balcony", "minibar", "safe", "aircon", "lounge_access"],
+      "images": [
+        "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800"
+      ],
+      "available": 10
+    },
+    {
+      "id": 6,
+      "hotelId": 4,
+      "name": "Garden Villa",
+      "description": "Chalé independente com jardim privativo e acesso direto à piscina.",
+      "size": 65,
+      "maxGuests": 4,
+      "beds": [
+        { "type": "king", "quantity": 1 },
+        { "type": "twin", "quantity": 2 }
+      ],
+      "pricePerNight": 890,
+      "amenities": ["garden", "pool_access", "kitchen", "living_room", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800"
+      ],
+      "available": 5
+    },
+    {
+      "id": 7,
+      "hotelId": 4,
+      "name": "Apartamento Família",
+      "description": "Apartamento espaçoso ideal para famílias, com dois quartos e sala.",
+      "size": 50,
+      "maxGuests": 5,
+      "beds": [
+        { "type": "queen", "quantity": 2 }
+      ],
+      "pricePerNight": 720,
+      "amenities": ["balcony", "living_room", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800"
+      ],
+      "available": 3
+    },
+    {
+      "id": 8,
+      "hotelId": 5,
+      "name": "Design Suite",
+      "description": "Suíte com design exclusivo, banheira de imersão e sistema de som integrado.",
+      "size": 50,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "king", "quantity": 1 }
+      ],
+      "pricePerNight": 1500,
+      "amenities": ["city_view", "bathtub", "sound_system", "minibar", "safe", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800"
+      ],
+      "available": 2
+    },
+    {
+      "id": 9,
+      "hotelId": 6,
+      "name": "Quarto Duplo Standard",
+      "description": "Quarto simples e confortável com vista para o jardim.",
+      "size": 20,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "double", "quantity": 1 }
+      ],
+      "pricePerNight": 280,
+      "amenities": ["garden_view", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1631049035634-c04b99f5bbf7?w=800"
+      ],
+      "available": 5
+    },
+    {
+      "id": 10,
+      "hotelId": 7,
+      "name": "Ocean Suite Premium",
+      "description": "O ápice do luxo: suíte master com vista mar, sala privativa e serviço de mordomo.",
+      "size": 80,
+      "maxGuests": 3,
+      "beds": [
+        { "type": "king", "quantity": 1 }
+      ],
+      "pricePerNight": 1800,
+      "amenities": ["ocean_view", "balcony", "living_room", "butler", "bathtub", "minibar", "safe", "aircon"],
+      "images": [
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800",
+        "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800"
+      ],
+      "available": 1
+    },
+    {
+      "id": 11,
+      "hotelId": 8,
+      "name": "Single Room",
+      "description": "Quarto individual compacto e funcional.",
+      "size": 15,
+      "maxGuests": 1,
+      "beds": [
+        { "type": "single", "quantity": 1 }
+      ],
+      "pricePerNight": 220,
+      "amenities": ["aircon", "desk"],
+      "images": [
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800"
+      ],
+      "available": 12
+    },
+    {
+      "id": 12,
+      "hotelId": 8,
+      "name": "Double Room",
+      "description": "Quarto duplo simples para viagens de negócios.",
+      "size": 20,
+      "maxGuests": 2,
+      "beds": [
+        { "type": "double", "quantity": 1 }
+      ],
+      "pricePerNight": 280,
+      "amenities": ["aircon", "desk"],
+      "images": [
+        "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800"
+      ],
+      "available": 6
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "hotelId": 1,
+      "guestName": "Maria Silva",
+      "guestAvatar": "https://i.pravatar.cc/150?img=1",
+      "rating": 5,
+      "title": "Experiência inesquecível!",
+      "comment": "Tudo perfeito, desde o check-in até o check-out. Equipe atenciosa, quarto impecável e café da manhã espetacular. Vista do quarto era de tirar o fôlego!",
+      "date": "2024-03-10",
+      "helpful": 42,
+      "verified": true
+    },
+    {
+      "id": 2,
+      "hotelId": 1,
+      "guestName": "João Santos",
+      "guestAvatar": "https://i.pravatar.cc/150?img=12",
+      "rating": 4,
+      "title": "Ótimo hotel, mas caro",
+      "comment": "Hotel maravilhoso, porém o preço é bem salgado. Vale a pena para uma ocasião especial.",
+      "date": "2024-03-05",
+      "helpful": 18,
+      "verified": true
+    },
+    {
+      "id": 3,
+      "hotelId": 1,
+      "guestName": "Ana Costa",
+      "guestAvatar": "https://i.pravatar.cc/150?img=5",
+      "rating": 5,
+      "title": "Melhor hotel do Rio!",
+      "comment": "Já me hospedei em vários hotéis do Rio e este é disparado o melhor. Localização perfeita, serviço impecável e instalações de primeira linha.",
+      "date": "2024-02-28",
+      "helpful": 65,
+      "verified": true
+    },
+    {
+      "id": 4,
+      "hotelId": 2,
+      "guestName": "Pedro Oliveira",
+      "guestAvatar": "https://i.pravatar.cc/150?img=13",
+      "rating": 5,
+      "title": "Pousada charmosa!",
+      "comment": "Lugar incrível em Santa Teresa. Vista linda, café da manhã delicioso e donos super atenciosos. Voltarei com certeza!",
+      "date": "2024-03-12",
+      "helpful": 23,
+      "verified": true
+    },
+    {
+      "id": 5,
+      "hotelId": 3,
+      "guestName": "Carla Mendes",
+      "guestAvatar": "https://i.pravatar.cc/150?img=9",
+      "rating": 4,
+      "title": "Bom para negócios",
+      "comment": "Hotel bem localizado perto do Ibirapuera. Bom para viagens de trabalho, mas nada excepcional.",
+      "date": "2024-03-08",
+      "helpful": 12,
+      "verified": true
+    },
+    {
+      "id": 6,
+      "hotelId": 4,
+      "guestName": "Roberto Lima",
+      "guestAvatar": "https://i.pravatar.cc/150?img=14",
+      "rating": 5,
+      "title": "Férias perfeitas em família!",
+      "comment": "Resort maravilhoso! As crianças amaram o parque aquático e nós aproveitamos muito o spa. All-inclusive vale muito a pena.",
+      "date": "2024-03-01",
+      "helpful": 51,
+      "verified": true
+    },
+    {
+      "id": 7,
+      "hotelId": 5,
+      "guestName": "Juliana Ferreira",
+      "guestAvatar": "https://i.pravatar.cc/150?img=10",
+      "rating": 5,
+      "title": "Design impressionante!",
+      "comment": "O hotel é uma obra de arte. Desde a arquitetura até os detalhes da decoração, tudo é impecável. O rooftop bar é incrível!",
+      "date": "2024-03-14",
+      "helpful": 38,
+      "verified": true
+    },
+    {
+      "id": 8,
+      "hotelId": 7,
+      "guestName": "Ricardo Souza",
+      "guestAvatar": "https://i.pravatar.cc/150?img=15",
+      "rating": 5,
+      "title": "Luxo e sofisticação",
+      "comment": "Melhor hotel de Ipanema! Serviço personalizado, gastronomia impecável e aquela vista... sem palavras!",
+      "date": "2024-03-11",
+      "helpful": 47,
+      "verified": true
+    }
+  ]
+}

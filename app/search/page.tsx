@@ -53,11 +53,14 @@ function SearchResults() {
             sort,
           }}
           onAfterSubmit={() => {
-            const el = document.getElementById('hotel-results')
-            if (!el) return
-            const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
-            const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
-            window.scrollTo({ top, behavior: 'smooth' })
+            // Defer layout read to next frame to avoid forced reflow
+            requestAnimationFrame(() => {
+              const el = document.getElementById('hotel-results')
+              if (!el) return
+              const navbarHeight = 60
+              const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+              window.scrollTo({ top, behavior: 'smooth' })
+            })
           }}
         />
       </div>

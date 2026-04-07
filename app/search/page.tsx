@@ -52,13 +52,20 @@ function SearchResults() {
             amenities,
             sort,
           }}
+          onAfterSubmit={() => {
+            const el = document.getElementById('hotel-results')
+            if (!el) return
+            const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
+            const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+            window.scrollTo({ top, behavior: 'smooth' })
+          }}
         />
       </div>
 
       <div className="flex gap-6">
 
         {/* Results */}
-        <div className="min-w-0 flex-1">
+        <div id="hotel-results" className="min-w-0 flex-1">
           {/* Results header */}
           <div className="mb-4">
             <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">

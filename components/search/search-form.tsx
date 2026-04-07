@@ -59,9 +59,10 @@ interface SearchFormProps {
     amenities?: string
     sort?: string
   }
+  onAfterSubmit?: () => void
 }
 
-export function SearchForm({ defaultValues }: SearchFormProps) {
+export function SearchForm({ defaultValues, onAfterSubmit }: SearchFormProps) {
   const router = useRouter()
   const setSearchParams = useBookingStore((s) => s.setSearchParams)
   const addRecentSearch = useHistoryStore((s) => s.addRecentSearch)
@@ -136,7 +137,9 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
       searchedAt: new Date().toISOString(),
     })
 
+    setShowFilters(false)
     router.push(`/search?${params.toString()}`)
+    onAfterSubmit?.()
   }
 
   const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType || amenities)

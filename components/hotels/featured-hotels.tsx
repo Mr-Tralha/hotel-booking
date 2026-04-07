@@ -3,12 +3,14 @@
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useTranslations } from '@/lib/i18n'
 import { HotelList } from './hotel-list'
+import type { Hotel, PaginatedResponse } from '@/types/mock-db'
 
 interface FeaturedHotelsProps {
   recommended?: boolean
+  initialData?: PaginatedResponse<Hotel>
 }
 
-export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
+export function FeaturedHotels({ recommended, initialData }: FeaturedHotelsProps) {
   const t = useTranslations('featured')
   const variant = recommended ? 'recommended' : 'featured'
 
@@ -25,12 +27,15 @@ export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
     },
   }[variant]
 
-  const { data, isLoading } = useHotels({
-    featured: true,
-    _sort: 'rating',
-    _order: 'desc',
-    _limit: 6,
-  })
+  const { data, isLoading } = useHotels(
+    {
+      featured: true,
+      _sort: 'rating',
+      _order: 'desc',
+      _limit: 6,
+    },
+    { initialData },
+  )
 
   return (
     <section className={`mx-auto w-full max-w-6xl px-4 ${config.py}`}>

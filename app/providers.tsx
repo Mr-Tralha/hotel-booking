@@ -1,14 +1,26 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { I18nProvider } from '@/lib/i18n'
 import type { Locale, Messages } from '@/lib/i18n'
+import { useHistoryStore } from '@/stores/history-store'
+import { useReservationsStore } from '@/stores/reservations-store'
+import { useUserStore } from '@/stores/user-store'
 
 interface ProvidersProps {
   children: ReactNode
   locale: Locale
   messages: Messages
+}
+
+function StoreHydrator() {
+  useEffect(() => {
+    useHistoryStore.persist.rehydrate()
+    useReservationsStore.persist.rehydrate()
+    useUserStore.persist.rehydrate()
+  }, [])
+  return null
 }
 
 export function Providers({ children, locale, messages }: ProvidersProps) {
@@ -27,7 +39,10 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
 
   return (
     <I18nProvider locale={locale} messages={messages}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <StoreHydrator />
+        {children}
+      </QueryClientProvider>
     </I18nProvider>
   )
 }

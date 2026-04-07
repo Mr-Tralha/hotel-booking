@@ -67,6 +67,6 @@ export const useHistoryStore = create<HistoryState>()(
           }
         }),
     }),
-    { name: 'history' }
+    { name: 'history', skipHydration: true }
   )
 )

@@ -1,10 +1,10 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { fetchHotels } from '@/lib/api'
-import type { HotelSearchParams } from '@/types/mock-db'
+import type { HotelSearchParams, Hotel, PaginatedResponse } from '@/types/mock-db'
 
 export function useHotels(
   params: HotelSearchParams,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; initialData?: PaginatedResponse<Hotel> }
 ) {
   const hasFilter =
     !!params.destination ||
@@ -19,5 +19,6 @@ export function useHotels(
     queryFn: () => fetchHotels(params),
     enabled: options?.enabled ?? hasFilter,
     placeholderData: keepPreviousData,
+    initialData: options?.initialData,
   })
 }

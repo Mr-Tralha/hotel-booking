@@ -21,6 +21,6 @@ export const useUserStore = create<UserState>()(
       setProfile: (profile) => set({ profile }),
       clearProfile: () => set({ profile: null }),
     }),
-    { name: 'user-profile' }
+    { name: 'user-profile', skipHydration: true }
   )
 )

@@ -31,6 +31,6 @@ export const useReservationsStore = create<ReservationsState>()(
           bookings: [booking, ...state.bookings],
         })),
     }),
-    { name: 'reservations' }
+    { name: 'reservations', skipHydration: true }
   )
 )

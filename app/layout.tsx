@@ -21,7 +21,7 @@ async function getLocale(): Promise<Locale> {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const messages = getMessages(locale)
+  const messages = await getMessages(locale)
   return {
     title: messages.metadata.title,
     description: messages.metadata.description,
@@ -34,7 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const locale = await getLocale()
-  const messages = getMessages(locale)
+  const messages = await getMessages(locale)
 
   return (
     <html lang={locale} className={`${geistSans.variable} h-full antialiased`}>

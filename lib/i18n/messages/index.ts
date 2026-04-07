@@ -1,6 +1,5 @@
 import type { Locale } from '../config'
 import { ptBR } from './pt-BR'
-import { en } from './en'
 
 type DeepStringify<T> = T extends string
   ? string
@@ -8,15 +7,17 @@ type DeepStringify<T> = T extends string
 
 export type Messages = DeepStringify<typeof ptBR>
 
-// Compile-time check: en must match pt-BR shape
-const _typeCheck: Messages = en
-void _typeCheck
+/**
+ * Returns messages for the given locale.
+ * The default locale (pt-BR) is statically bundled.
+ * Other locales are loaded on demand via dynamic import (~27KB saved from initial bundle).
+ */
+export async function getMessages(locale: Locale): Promise<Messages> {
+  if (locale === 'pt-BR') return ptBR
 
-const allMessages: Record<Locale, Messages> = {
-  'pt-BR': ptBR,
-  en,
-}
-
-export function getMessages(locale: Locale): Messages {
-  return allMessages[locale]
+  const { en } = await import('./en')
+  // Compile-time shape check — TS ensures en satisfies Messages
+  const _typeCheck: Messages = en
+  void _typeCheck
+  return en
 }

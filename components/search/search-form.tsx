@@ -186,7 +186,7 @@ export function SearchForm({ defaultValues, onAfterSubmit }: SearchFormProps) {
                 render={({ field: roomsField }) => (
                   <GuestSelector
                     adults={adultsField.value}
-                    children={childrenField.value}
+                    childGuests={childrenField.value}
                     rooms={roomsField.value}
                     onAdultsChange={adultsField.onChange}
                     onChildrenChange={childrenField.onChange}

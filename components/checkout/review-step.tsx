@@ -8,7 +8,6 @@ import type { PersonalDataForm, PaymentForm } from '@/lib/validations/checkout'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
 import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useTranslations, useLocale } from '@/lib/i18n'
 

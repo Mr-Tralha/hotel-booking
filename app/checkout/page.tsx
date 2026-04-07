@@ -13,7 +13,6 @@ import { PaymentStep } from '@/components/checkout/payment-step'
 import { ReviewStep } from '@/components/checkout/review-step'
 import type { PersonalDataForm, PaymentForm } from '@/lib/validations/checkout'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { useTranslations } from '@/lib/i18n'
 
 export default function CheckoutPage() {

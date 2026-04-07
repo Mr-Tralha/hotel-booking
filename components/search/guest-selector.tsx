@@ -6,7 +6,7 @@ import { useTranslations } from '@/lib/i18n'
 
 interface GuestSelectorProps {
   adults: number
-  children: number
+  childGuests: number
   rooms: number
   onAdultsChange: (value: number) => void
   onChildrenChange: (value: number) => void
@@ -85,7 +85,7 @@ function Counter({
 
 export function GuestSelector({
   adults,
-  children: childrenCount,
+  childGuests,
   rooms,
   onAdultsChange,
   onChildrenChange,
@@ -109,7 +109,7 @@ export function GuestSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const totalGuests = adults + childrenCount
+  const totalGuests = adults + childGuests
 
   const summary = [
     tc('guestCount', { count: totalGuests }),
@@ -172,7 +172,7 @@ export function GuestSelector({
           <Counter
             label={t('children')}
             subtitle={t('childrenAge')}
-            value={childrenCount}
+            value={childGuests}
             min={0}
             max={6}
             onChange={onChildrenChange}

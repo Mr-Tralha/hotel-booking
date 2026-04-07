@@ -16,7 +16,7 @@ export function ShareButton({ hotelName }: { hotelName: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="secondary" size="sm" onClick={handleCopy}>
+      <Button variant="secondary" size="sm" onClick={handleCopy} aria-label={`${t('share')} ${hotelName}`}>
         <ShareIcon />
         {copied ? t('copied') : t('share')}
       </Button>

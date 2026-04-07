@@ -64,9 +64,10 @@ export function getHotels(filters: HotelSearchParams): PaginatedResponse<Hotel> 
     results = results.filter((hotel) => hotel.rating >= filters.rating_gte!)
   }
 
-  // Filter by property type
+  // Filter by property type (supports comma-separated for multi-select)
   if (filters.propertyType) {
-    results = results.filter((hotel) => hotel.propertyType === filters.propertyType)
+    const types = filters.propertyType.split(',') as Hotel['propertyType'][]
+    results = results.filter((hotel) => types.includes(hotel.propertyType))
   }
 
   // Filter by featured

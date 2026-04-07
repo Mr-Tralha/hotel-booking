@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import { formatCurrency } from '@/lib/utils'
 import {
   AMENITY_LABELS,
@@ -5,6 +8,7 @@ import {
   CANCELLATION_LABELS,
   CANCELLATION_DESCRIPTIONS,
 } from '@/lib/labels'
+import { cn } from '@/lib/utils'
 import type { HotelWithRooms, Amenity } from '@/types/mock-db'
 
 interface HotelInfoProps {
@@ -61,32 +65,24 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       </div>
 
       {/* Check-in/Check-out */}
-      <div className="flex gap-6">
-        <div>
+      <div className="flex items-stretch gap-0 rounded-lg border border-gray-200 overflow-hidden">
+        <div className="flex-1 p-4">
           <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in</span>
-          <p className="mt-0.5 text-sm font-semibold text-gray-900">{hotel.checkInTime}</p>
+          <p className="mt-1 text-sm font-semibold text-gray-900">
+            {hotel.checkInTime}
+          </p>
         </div>
-        <div>
+        <div className="w-px bg-gray-200" />
+        <div className="flex-1 p-4">
           <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-out</span>
-          <p className="mt-0.5 text-sm font-semibold text-gray-900">{hotel.checkOutTime}</p>
+          <p className="mt-1 text-sm font-semibold text-gray-900">
+            {hotel.checkOutTime}
+          </p>
         </div>
       </div>
 
-      {/* Amenities */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900">Comodidades</h2>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {hotel.amenities.map((amenity) => (
-            <div
-              key={amenity}
-              className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700"
-            >
-              <AmenityIcon amenity={amenity} />
-              {AMENITY_LABELS[amenity]}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Amenities — collapsible */}
+      <AmenitiesDropdown amenities={hotel.amenities} />
 
       {/* Cancellation policy */}
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
@@ -110,6 +106,57 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
           </span>
         </div>
       )}
+    </div>
+  )
+}
+
+function AmenitiesDropdown({ amenities }: { amenities: Amenity[] }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="rounded-lg border border-gray-200">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50"
+        aria-expanded={open}
+      >
+        <h2 className="text-lg font-semibold text-gray-900">
+          Comodidades do estabelecimento ({amenities.length})
+        </h2>
+        <svg
+          className={cn(
+            'h-5 w-5 text-gray-500 transition-transform duration-200',
+            open && 'rotate-180'
+          )}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+        </svg>
+      </button>
+      <div
+        className={cn(
+          'grid overflow-hidden transition-all duration-200 ease-in-out',
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="grid grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-3">
+            {amenities.map((amenity) => (
+              <div
+                key={amenity}
+                className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700"
+              >
+                <AmenityIcon amenity={amenity} />
+                {AMENITY_LABELS[amenity]}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

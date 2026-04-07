@@ -108,7 +108,7 @@ export interface HotelSearchParams {
   pricePerNight_gte?: number
   pricePerNight_lte?: number
   rating_gte?: number
-  propertyType?: Hotel['propertyType']
+  propertyType?: Hotel['propertyType'] | string
   featured?: boolean
   _sort?: keyof Hotel
   _order?: 'asc' | 'desc'

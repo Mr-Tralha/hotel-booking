@@ -5,6 +5,7 @@ import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { SearchForm } from '@/components/search/search-form'
 import { HotelList } from '@/components/hotels/hotel-list'
+import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 import { SortSelector } from '@/components/search/sort-selector'
 import { Pagination } from '@/components/ui/pagination'
 
@@ -80,6 +81,11 @@ function SearchResults() {
         emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
         columns={3}
       />
+
+      {/* Show featured hotels when no results */}
+      {!isLoading && data && data.data.length === 0 && (
+        <FeaturedHotels />
+      )}
 
       {/* Pagination */}
       {!isLoading && total > 0 && (

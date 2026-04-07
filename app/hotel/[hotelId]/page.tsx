@@ -21,14 +21,32 @@ import { FeaturedHotels } from '@/components/hotels/featured-hotels'
  * Syncs selected rooms between URL (source of truth) and Zustand store.
  * - On mount: hydrates store from URL `rooms` param
  * - On store change: updates URL `rooms` param with debounce
+ * - On unmount / hotelId change: clears selected rooms (isolation)
  */
-function useRoomUrlSync(hotelRooms: { id: number; name: string; pricePerNight: number }[]) {
+function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string; pricePerNight: number }[]) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
+  const selectedHotelId = useBookingStore((s) => s.selectedHotelId)
   const setSelectedRooms = useBookingStore((s) => s.setSelectedRooms)
+  const clearRooms = useBookingStore((s) => s.clearRooms)
   const hydrated = useRef(false)
+
+  // Clear rooms if navigating to a different hotel
+  useEffect(() => {
+    if (selectedHotelId !== null && selectedHotelId !== hotelId) {
+      clearRooms()
+    }
+  }, [hotelId, selectedHotelId, clearRooms])
+
+  // Clear rooms on unmount (leaving hotel page)
+  useEffect(() => {
+    return () => {
+      clearRooms()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Hydrate store from URL on mount
   useEffect(() => {
@@ -48,7 +66,7 @@ function useRoomUrlSync(hotelRooms: { id: number; name: string; pricePerNight: n
       .filter((r): r is SelectedRoom => r != null)
 
     if (rooms.length > 0) {
-      setSelectedRooms(rooms)
+      setSelectedRooms(rooms, hotelId)
     }
     hydrated.current = true
     // Run only on mount
@@ -108,8 +126,9 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
   const [modalDismissed, setModalDismissed] = useState(false)
   const showModal = missingParams && !modalDismissed
 
-  // Sync rooms between URL ↔ store
+  // Sync rooms between URL ↔ store (isolated per hotel)
   useRoomUrlSync(
+    hotel.id,
     hotel.rooms.map((r) => ({ id: r.id, name: r.name, pricePerNight: r.pricePerNight }))
   )
 
@@ -124,7 +143,7 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
         <Breadcrumb hotelName={hotel.name} destination={hotel.destination} />
 
         {/* Gallery */}
-        <HotelGallery images={hotel.images} hotelName={hotel.name} />
+        <HotelGallery images={hotel.images} hotelName={hotel.name} availableRooms={hotel.availableRooms} />
       </div>
 
       {/* Section navigation */}

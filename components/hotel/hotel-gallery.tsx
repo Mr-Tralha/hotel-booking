@@ -6,9 +6,10 @@ import { useState, useCallback, useEffect } from 'react'
 interface HotelGalleryProps {
   images: string[]
   hotelName: string
+  availableRooms?: number
 }
 
-export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
+export function HotelGallery({ images, hotelName, availableRooms }: HotelGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -69,6 +70,13 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
             className="object-cover transition-transform duration-300 hover:scale-105 cursor-pointer"
             priority
           />
+          {availableRooms !== undefined && availableRooms <= 3 && (
+            <span className="absolute right-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm pointer-events-none">
+              {availableRooms === 1
+                ? 'Último quarto!'
+                : `Apenas ${availableRooms} disponíveis!`}
+            </span>
+          )}
         </button>
 
         {/* Secondary images */}
@@ -113,7 +121,7 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
       {/* Lightbox */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/90"
           role="dialog"
           aria-label="Galeria de fotos"
           aria-modal="true"
@@ -137,14 +145,14 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
           <button
             type="button"
             onClick={() => goTo(selectedIndex - 1)}
-            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            className="hidden md:absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
             aria-label="Foto anterior"
           >
             <ChevronLeftIcon />
           </button>
 
           {/* Image */}
-          <div className="relative mx-16 h-[80vh] w-full max-w-5xl">
+          <div className="relative h-[80vh] w-full max-w-5xl mx-4 md:mx-16">
             <Image
               src={images[selectedIndex]}
               alt={`${hotelName} — foto ${selectedIndex + 1}`}
@@ -159,7 +167,7 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
           <button
             type="button"
             onClick={() => goTo(selectedIndex + 1)}
-            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            className="hidden md:absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
             aria-label="Próxima foto"
           >
             <ChevronRightIcon />

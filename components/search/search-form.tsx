@@ -13,7 +13,6 @@ import { GuestSelector } from './guest-selector'
 import { Button } from '@/components/ui/button'
 
 const PROPERTY_TYPES = [
-  { value: '', label: 'Todos' },
   { value: 'hotel', label: 'Hotel' },
   { value: 'pousada', label: 'Pousada' },
   { value: 'resort', label: 'Resort' },
@@ -25,6 +24,10 @@ const RATING_OPTIONS = [
   { value: '4', label: '4+' },
   { value: '4.5', label: '4.5+' },
 ]
+
+const PRICE_MIN = 0
+const PRICE_MAX = 2000
+const PRICE_STEP = 50
 
 interface SearchFormProps {
   defaultValues?: {
@@ -195,27 +198,51 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
       {/* Filtros colapsáveis */}
       {showFilters && (
         <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
-          {/* Faixa de preço */}
-          <fieldset className="flex flex-col gap-1.5">
+          {/* Price range slider */}
+          <fieldset className="flex flex-col gap-2">
             <legend className="text-sm font-medium text-gray-700">
               Preço por noite (R$)
             </legend>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
-                min="0"
-                placeholder="Mínimo"
-                value={priceMin}
-                onChange={(e) => setPriceMin(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            <div className="flex items-center justify-between text-sm text-gray-900 font-medium">
+              <span>R$ {priceMin ? Number(priceMin) : PRICE_MIN}</span>
+              <span>R$ {priceMax ? Number(priceMax) : PRICE_MAX}</span>
+            </div>
+            <div className="relative h-6 flex items-center">
+              <div className="absolute inset-x-0 h-1.5 rounded-full bg-gray-200" />
+              <div
+                className="absolute h-1.5 rounded-full bg-blue-500"
+                style={{
+                  left: `${(((priceMin ? Number(priceMin) : PRICE_MIN) - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100}%`,
+                  right: `${100 - (((priceMax ? Number(priceMax) : PRICE_MAX) - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100}%`,
+                }}
               />
               <input
-                type="number"
-                min="0"
-                placeholder="Máximo"
-                value={priceMax}
-                onChange={(e) => setPriceMax(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                type="range"
+                min={PRICE_MIN}
+                max={PRICE_MAX}
+                step={PRICE_STEP}
+                value={priceMin ? Number(priceMin) : PRICE_MIN}
+                onChange={(e) => {
+                  const v = Number(e.target.value)
+                  const maxV = priceMax ? Number(priceMax) : PRICE_MAX
+                  if (v <= maxV) setPriceMin(v === PRICE_MIN ? '' : String(v))
+                }}
+                className="pointer-events-none absolute inset-x-0 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+                aria-label="Preço mínimo"
+              />
+              <input
+                type="range"
+                min={PRICE_MIN}
+                max={PRICE_MAX}
+                step={PRICE_STEP}
+                value={priceMax ? Number(priceMax) : PRICE_MAX}
+                onChange={(e) => {
+                  const v = Number(e.target.value)
+                  const minV = priceMin ? Number(priceMin) : PRICE_MIN
+                  if (v >= minV) setPriceMax(v === PRICE_MAX ? '' : String(v))
+                }}
+                className="pointer-events-none absolute inset-x-0 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+                aria-label="Preço máximo"
               />
             </div>
           </fieldset>
@@ -240,23 +267,48 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
             </div>
           </fieldset>
 
-          {/* Tipo de propriedade */}
+          {/* Tipo de propriedade — multi-select */}
           <fieldset className="flex flex-col gap-1.5">
             <legend className="text-sm font-medium text-gray-700">
               Tipo de propriedade
             </legend>
             <div className="flex flex-wrap gap-1.5">
-              {PROPERTY_TYPES.map((opt) => (
-                <Button
-                  key={opt.value}
-                  type="button"
-                  variant={propertyType === opt.value ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => setPropertyType(opt.value)}
-                >
-                  {opt.label}
-                </Button>
-              ))}
+              {PROPERTY_TYPES.map((opt) => {
+                const selectedTypes = propertyType ? propertyType.split(',') : []
+                const checked = selectedTypes.includes(opt.value)
+                return (
+                  <label
+                    key={opt.value}
+                    className={cn(
+                      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors border',
+                      checked
+                        ? 'bg-blue-50 border-blue-200 text-blue-700'
+                        : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'flex h-4 w-4 items-center justify-center rounded-full border-2 flex-shrink-0 transition-colors',
+                        checked ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                      )}
+                    >
+                      {checked && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        const next = checked
+                          ? selectedTypes.filter((t) => t !== opt.value)
+                          : [...selectedTypes, opt.value]
+                        setPropertyType(next.join(','))
+                      }}
+                      className="sr-only"
+                    />
+                    {opt.label}
+                  </label>
+                )
+              })}
             </div>
           </fieldset>
 

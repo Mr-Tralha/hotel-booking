@@ -21,6 +21,11 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
   const adults = Number(searchParams.get('adults')) || 2
   const children = Number(searchParams.get('children')) || 0
   const totalGuests = adults + children
+  const roomsNeeded = Number(searchParams.get('rooms')) || 1
+
+  // Sum of available units across all room types in this hotel
+  const totalAvailable = rooms.reduce((sum, r) => sum + r.available, 0)
+  const notEnoughRooms = totalAvailable < roomsNeeded
 
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const setSelectedRooms = useBookingStore((s) => s.setSelectedRooms)
@@ -40,9 +45,26 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
 
   return (
     <section id="quartos">
-      <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-        Quartos Disponíveis
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
+          Quartos Disponíveis
+        </h2>
+        {roomsNeeded > 1 && (
+          <span className="text-sm text-gray-500">
+            {selectedRooms.length}/{roomsNeeded} quartos selecionados
+          </span>
+        )}
+      </div>
+
+      {notEnoughRooms && (
+        <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <WarningIcon />
+          <span>
+            Este hotel tem apenas <strong>{totalAvailable}</strong> {totalAvailable === 1 ? 'unidade disponível' : 'unidades disponíveis'} no total,
+            mas sua busca solicitou <strong>{roomsNeeded}</strong> quartos.
+          </span>
+        </div>
+      )}
       <div className="mt-4 space-y-4">
         {rooms.map((room) => (
           <RoomCard
@@ -81,5 +103,15 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
         />
       )}
     </section>
+  )
+}
+
+function WarningIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-0.5" aria-hidden="true">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
   )
 }

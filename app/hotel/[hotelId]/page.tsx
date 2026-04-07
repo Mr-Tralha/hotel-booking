@@ -43,7 +43,7 @@ function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string;
 
   // Hydrate store from URL on mount
   useEffect(() => {
-    const roomsParam = searchParams.get('rooms')
+    const roomsParam = searchParams.get('roomIds')
     if (!roomsParam) {
       hydrated.current = true
       return
@@ -73,9 +73,9 @@ function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string;
     const timer = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString())
       if (selectedRooms.length > 0) {
-        params.set('rooms', selectedRooms.map((r) => r.id).join(','))
+        params.set('roomIds', selectedRooms.map((r) => r.id).join(','))
       } else {
-        params.delete('rooms')
+        params.delete('roomIds')
       }
 
       const newUrl = `${pathname}?${params.toString()}`

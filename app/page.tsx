@@ -1,4 +1,5 @@
 import { SearchForm } from '@/components/search/search-form'
+import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 
 export default function Home() {
   return (
@@ -27,6 +28,9 @@ export default function Home() {
       <div className="relative z-10 mx-auto -mt-20 w-full max-w-xl px-4 sm:-mt-24 md:-mt-28">
         <SearchForm />
       </div>
+
+      {/* Featured hotels */}
+      <FeaturedHotels />
     </main>
   )
 }

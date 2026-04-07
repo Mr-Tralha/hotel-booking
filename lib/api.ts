@@ -31,6 +31,8 @@ export async function fetchHotels(
     searchParams.set('rating_gte', String(params.rating_gte))
   if (params.propertyType)
     searchParams.set('propertyType', params.propertyType)
+  if (params.featured !== undefined)
+    searchParams.set('featured', String(params.featured))
   if (params._sort) searchParams.set('_sort', params._sort)
   if (params._order) searchParams.set('_order', params._order)
   if (params._page !== undefined)

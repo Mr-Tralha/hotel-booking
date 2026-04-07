@@ -49,3 +49,14 @@ export function calculateTotal(
 export function cn(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
 }
+
+/**
+ * Normaliza texto para comparação (remove acentos, caracteres especiais e case)
+ */
+export function normalizeText(text: string) {
+  return text
+    .normalize('NFD') // separa acento da letra
+    .replace(/[\u0300-\u036f]/g, '') // remove os acentos
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '') // remove caracteres especiais
+}

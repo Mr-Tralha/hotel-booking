@@ -8,6 +8,8 @@ import {
   PaginatedResponse,
 } from '@/types/mock-db'
 
+import { normalizeText } from './utils'
+
 /**
  * Returns destination suggestions optionally filtered by a search query.
  * Matches against `name` and `country` fields (case-insensitive, partial match).
@@ -21,11 +23,11 @@ export function getSuggestions(query?: string): Suggestion[] {
     return db.suggestions as Suggestion[]
   }
 
-  const lowerQuery = query.toLowerCase()
+  const sanitizedQuery = normalizeText(query)
   return (db.suggestions as Suggestion[]).filter(
     (suggestion) =>
-      suggestion.name.toLowerCase().includes(lowerQuery) ||
-      suggestion.country.toLowerCase().includes(lowerQuery)
+      normalizeText(suggestion.name).includes(sanitizedQuery) ||
+      normalizeText(suggestion.country).includes(sanitizedQuery)
   )
 }
 

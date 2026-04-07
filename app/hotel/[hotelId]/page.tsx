@@ -40,14 +40,6 @@ function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string;
     }
   }, [hotelId, selectedHotelId, clearRooms])
 
-  // Clear rooms on unmount (leaving hotel page)
-  useEffect(() => {
-    return () => {
-      clearRooms()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   // Hydrate store from URL on mount
   useEffect(() => {
     const roomsParam = searchParams.get('rooms')

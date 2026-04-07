@@ -74,7 +74,8 @@ export const paymentSchema = z.object({
   cardHolder: z
     .string()
     .min(1, 'Nome no cartão é obrigatório')
-    .min(3, 'Nome deve ter pelo menos 3 caracteres'),
+    .min(3, 'Nome deve ter pelo menos 3 caracteres')
+    .refine((val) => !/\d/.test(val), { message: 'Nome não pode conter números' }),
   expiry: z
     .string()
     .min(1, 'Validade é obrigatória')

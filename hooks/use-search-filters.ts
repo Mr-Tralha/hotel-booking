@@ -25,6 +25,7 @@ export function useSearchFilters() {
   const priceMax = searchParams.get('priceMax') ?? ''
   const ratingMin = searchParams.get('ratingMin') ?? ''
   const propertyType = searchParams.get('propertyType') ?? ''
+  const amenities = searchParams.get('amenities') ?? ''
   const sort = searchParams.get('sort') ?? ''
   const page = Number(searchParams.get('page') ?? '1')
 
@@ -54,6 +55,7 @@ export function useSearchFilters() {
     pricePerNight_lte: priceMax ? Number(priceMax) : undefined,
     rating_gte: ratingMin ? Number(ratingMin) : undefined,
     propertyType: (propertyType as HotelSearchParams['propertyType']) || undefined,
+    amenities: amenities || undefined,
     _page: page,
     _limit: 9,
   }
@@ -68,6 +70,9 @@ export function useSearchFilters() {
   } else if (sort === 'rating_desc') {
     apiParams._sort = 'rating'
     apiParams._order = 'desc'
+  } else if (sort === 'popular') {
+    apiParams._sort = 'featured'
+    apiParams._order = 'desc'
   }
 
   return {
@@ -81,6 +86,7 @@ export function useSearchFilters() {
     priceMax,
     ratingMin,
     propertyType,
+    amenities,
     sort,
     page,
     apiParams,

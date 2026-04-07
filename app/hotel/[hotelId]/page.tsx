@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useEffect, useRef, useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useHotel } from '@/hooks/queries/use-hotel'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
@@ -9,14 +10,22 @@ import { Breadcrumb } from '@/components/hotel/breadcrumb'
 import { HotelGallery } from '@/components/hotel/hotel-gallery'
 import { HotelInfo } from '@/components/hotel/hotel-info'
 import { RoomList } from '@/components/hotel/room-list'
-import { HotelReviews } from '@/components/hotel/hotel-reviews'
 import { HotelDetailSkeleton } from '@/components/hotel/hotel-detail-skeleton'
 import { SectionNav } from '@/components/hotel/section-nav'
 import { BookingSummary } from '@/components/hotel/booking-summary'
-import { SearchParamsModal } from '@/components/hotel/search-params-modal'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
+
+// Dynamic imports for below-fold / on-demand components
+const HotelReviews = dynamic(
+  () => import('@/components/hotel/hotel-reviews').then((m) => ({ default: m.HotelReviews })),
+  { ssr: false }
+)
+const SearchParamsModal = dynamic(
+  () => import('@/components/hotel/search-params-modal').then((m) => ({ default: m.SearchParamsModal })),
+  { ssr: false }
+)
 
 /**
  * Syncs selected rooms between URL (source of truth) and Zustand store.

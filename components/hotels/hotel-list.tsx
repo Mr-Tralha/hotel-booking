@@ -1,5 +1,3 @@
-'use client'
-
 import type { Hotel } from '@/types/mock-db'
 import { HotelCard } from './hotel-card'
 import { HotelCardSkeleton } from './hotel-card-skeleton'

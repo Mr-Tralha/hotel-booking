@@ -1,8 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useState, useCallback } from 'react'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
+
+// Lazy load lightbox — only needed on user interaction
+const ImageLightbox = dynamic(
+  () => import('@/components/ui/image-lightbox').then((m) => ({ default: m.ImageLightbox })),
+  { ssr: false }
+)
 
 
 interface HotelGalleryProps {

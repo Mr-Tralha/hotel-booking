@@ -1,12 +1,21 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { RoomCard } from '@/components/room/room-card'
-import { RoomDetailModal } from '@/components/room/room-detail-modal'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { useBookingStore } from '@/stores/booking-store'
 import type { Hotel, Room } from '@/types/mock-db'
+
+// Lazy load modals — only needed on user interaction
+const RoomDetailModal = dynamic(
+  () => import('@/components/room/room-detail-modal').then((m) => ({ default: m.RoomDetailModal })),
+  { ssr: false }
+)
+const ImageLightbox = dynamic(
+  () => import('@/components/ui/image-lightbox').then((m) => ({ default: m.ImageLightbox })),
+  { ssr: false }
+)
 
 interface RoomListProps {
   hotel: Hotel

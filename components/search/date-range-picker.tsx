@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { toDateInputValue } from '@/lib/utils'
 
@@ -25,6 +26,12 @@ function CalendarIcon() {
   )
 }
 
+function formatShortDate(value: string): string {
+  if (!value) return ''
+  const date = new Date(value + 'T00:00:00')
+  return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' }).format(date)
+}
+
 interface DateRangePickerProps {
   checkIn: string
   checkOut: string
@@ -42,107 +49,105 @@ export function DateRangePicker({
   checkInError,
   checkOutError,
 }: DateRangePickerProps) {
+  const checkInRef = useRef<HTMLInputElement>(null)
+  const checkOutRef = useRef<HTMLInputElement>(null)
   const today = toDateInputValue(new Date())
-
-  // Min check-out: check-in + 1 dia
   const minCheckOut = checkIn
-    ? toDateInputValue(
-      new Date(new Date(checkIn + 'T00:00:00').getTime() + 86400000)
-    )
+    ? toDateInputValue(new Date(new Date(checkIn + 'T00:00:00').getTime() + 86400000))
     : today
-
-  // Max check-out: check-in + 30 dias
   const maxCheckOut = checkIn
-    ? toDateInputValue(
-      new Date(
-        new Date(checkIn + 'T00:00:00').getTime() + 30 * 86400000
-      )
-    )
+    ? toDateInputValue(new Date(new Date(checkIn + 'T00:00:00').getTime() + 30 * 86400000))
     : undefined
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="check-in"
-          className="text-sm font-medium text-gray-700"
+    <div className="flex flex-col gap-1">
+      <div
+        className={cn(
+          'flex overflow-hidden rounded-xl border',
+          checkInError || checkOutError ? 'border-red-400' : 'border-gray-300'
+        )}
+      >
+        {/* Check-in side */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => checkInRef.current?.showPicker?.()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') checkInRef.current?.showPicker?.()
+          }}
+          className="relative flex flex-1 cursor-pointer flex-col px-4 py-3 select-none hover:bg-gray-50 transition-colors"
+          aria-label="Selecionar data de check-in"
         >
-          Check-in
-        </label>
-        <div className="relative">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Check-in
+          </span>
+          <div className="mt-1 flex items-center gap-1.5">
+            <CalendarIcon />
+            <span className={cn('text-sm font-medium', checkIn ? 'text-gray-900' : 'text-gray-400')}>
+              {checkIn ? formatShortDate(checkIn) : 'Selecionar'}
+            </span>
+          </div>
           <input
-            id="check-in"
+            ref={checkInRef}
             type="date"
             min={today}
             value={checkIn}
             onChange={(e) => {
               onCheckInChange(e.target.value)
-              // Reset check-out se ficou antes do novo check-in
-              if (checkOut && e.target.value >= checkOut) {
-                onCheckOutChange('')
-              }
+              if (checkOut && e.target.value >= checkOut) onCheckOutChange('')
             }}
-            aria-invalid={!!checkInError}
-            aria-describedby={checkInError ? 'checkin-error' : undefined}
-            className={cn(
-              'w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
-              checkIn ? 'text-gray-900' : 'text-transparent',
-              checkInError &&
-              'border-red-400 focus:border-red-500 focus:ring-red-500/20'
-            )}
+            aria-label="Data de check-in"
+            className="absolute inset-0 cursor-pointer opacity-0"
           />
-          {!checkIn && (
-            <span className="pointer-events-none absolute inset-0 flex items-center gap-1.5 px-3 text-sm text-gray-400">
-              <CalendarIcon />
-              dd/mm/aaaa
-            </span>
-          )}
         </div>
-        {checkInError && (
-          <p id="checkin-error" className="text-xs text-red-500" role="alert">
-            {checkInError}
-          </p>
-        )}
-      </div>
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="check-out"
-          className="text-sm font-medium text-gray-700"
+        {/* Vertical divider */}
+        <div className="w-px self-stretch bg-gray-200" />
+
+        {/* Check-out side */}
+        <div
+          role="button"
+          tabIndex={checkIn ? 0 : -1}
+          onClick={() => { if (checkIn) checkOutRef.current?.showPicker?.() }}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && checkIn) checkOutRef.current?.showPicker?.()
+          }}
+          className={cn(
+            'relative flex flex-1 flex-col px-4 py-3 select-none transition-colors',
+            checkIn ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-60'
+          )}
+          aria-label="Selecionar data de check-out"
+          aria-disabled={checkIn ? undefined : 'true'}
         >
-          Check-out
-        </label>
-        <div className="relative">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Check-out
+          </span>
+          <div className="mt-1 flex items-center gap-1.5">
+            <CalendarIcon />
+            <span className={cn('text-sm font-medium', checkOut ? 'text-gray-900' : 'text-gray-400')}>
+              {checkOut ? formatShortDate(checkOut) : 'Selecionar'}
+            </span>
+          </div>
           <input
-            id="check-out"
+            ref={checkOutRef}
             type="date"
             min={minCheckOut}
             max={maxCheckOut}
             value={checkOut}
-            onChange={(e) => onCheckOutChange(e.target.value)}
             disabled={!checkIn}
-            aria-invalid={!!checkOutError}
-            aria-describedby={checkOutError ? 'checkout-error' : undefined}
-            className={cn(
-              'w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-50',
-              checkOut ? 'text-gray-900' : 'text-transparent',
-              checkOutError &&
-              'border-red-400 focus:border-red-500 focus:ring-red-500/20'
-            )}
+            onChange={(e) => onCheckOutChange(e.target.value)}
+            aria-label="Data de check-out"
+            className="absolute inset-0 cursor-pointer opacity-0 disabled:cursor-not-allowed"
           />
-          {!checkOut && (
-            <span className="pointer-events-none absolute inset-0 flex items-center gap-1.5 px-3 text-sm text-gray-400">
-              <CalendarIcon />
-              dd/mm/aaaa
-            </span>
-          )}
         </div>
-        {checkOutError && (
-          <p id="checkout-error" className="text-xs text-red-500" role="alert">
-            {checkOutError}
-          </p>
-        )}
       </div>
+
+      {checkInError && (
+        <p className="text-xs text-red-500" role="alert">{checkInError}</p>
+      )}
+      {!checkInError && checkOutError && (
+        <p className="text-xs text-red-500" role="alert">{checkOutError}</p>
+      )}
     </div>
   )
 }

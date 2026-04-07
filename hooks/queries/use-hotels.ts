@@ -10,7 +10,9 @@ export function useHotels(
     !!params.destination ||
     params.featured !== undefined ||
     params.propertyType !== undefined ||
-    params.rating_gte !== undefined
+    params.rating_gte !== undefined ||
+    params.pricePerNight_gte !== undefined ||
+    params.pricePerNight_lte !== undefined
 
   return useQuery({
     queryKey: ['hotels', params],

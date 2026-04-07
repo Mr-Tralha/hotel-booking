@@ -34,6 +34,16 @@ export function calculateNights(checkIn: Date, checkOut: Date): number {
 }
 
 /**
+ * Calcula o total da reserva (soma dos preços por noite × noites)
+ */
+export function calculateTotal(
+  rooms: { pricePerNight: number }[],
+  nights: number
+): number {
+  return rooms.reduce((sum, room) => sum + room.pricePerNight * nights, 0)
+}
+
+/**
  * Gera classes condicionais (alternativa mínima ao clsx)
  */
 export function cn(...classes: (string | false | null | undefined)[]): string {

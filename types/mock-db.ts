@@ -83,6 +83,7 @@ export type Amenity =
   | 'concierge'
   | 'valet'
   | 'lounge_access'
+  | 'breakfast'
 
 export type RoomAmenity =
   | 'ocean_view'
@@ -108,7 +109,7 @@ export interface HotelSearchParams {
   pricePerNight_gte?: number
   pricePerNight_lte?: number
   rating_gte?: number
-  propertyType?: Hotel['propertyType']
+  propertyType?: Hotel['propertyType'] | string
   featured?: boolean
   _sort?: keyof Hotel
   _order?: 'asc' | 'desc'

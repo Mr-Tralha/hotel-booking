@@ -5,6 +5,7 @@ import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { SearchForm } from '@/components/search/search-form'
 import { HotelList } from '@/components/hotels/hotel-list'
+import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 import { SortSelector } from '@/components/search/sort-selector'
 import { Pagination } from '@/components/ui/pagination'
 
@@ -60,13 +61,9 @@ function SearchResults() {
               ? `Hotéis em ${destination}`
               : 'Resultados da busca'}
           </h1>
-          {!isLoading && data && (
+          {data && (
             <p className="mt-0.5 text-sm text-gray-500">
-              {total === 0
-                ? 'Nenhum hotel encontrado'
-                : total === 1
-                  ? '1 hotel encontrado'
-                  : `${total} hotéis encontrados`}
+              {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
             </p>
           )}
         </div>
@@ -84,6 +81,11 @@ function SearchResults() {
         emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
         columns={3}
       />
+
+      {/* Show featured hotels when no results */}
+      {!isLoading && data && data.data.length === 0 && (
+        <FeaturedHotels />
+      )}
 
       {/* Pagination */}
       {!isLoading && total > 0 && (

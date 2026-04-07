@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { cn, formatCurrency } from '@/lib/utils'
 import { AMENITY_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/labels'
 import type { Hotel } from '@/types/mock-db'
@@ -11,12 +12,22 @@ interface HotelCardProps {
 }
 
 export function HotelCard({ hotel }: HotelCardProps) {
+  const searchParams = useSearchParams()
+
+  const FORWARDED_PARAMS = ['checkIn', 'checkOut', 'adults', 'children', 'rooms'] as const
+  const query = new URLSearchParams()
+  for (const key of FORWARDED_PARAMS) {
+    const val = searchParams.get(key)
+    if (val) query.set(key, val)
+  }
+  const href = `/hotel/${hotel.id}${query.size ? `?${query}` : ''}`
+
   const displayAmenities = hotel.amenities.slice(0, 4)
   const extraCount = hotel.amenities.length - displayAmenities.length
 
   return (
     <Link
-      href={`/hotel/${hotel.id}`}
+      href={href}
       className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Image */}

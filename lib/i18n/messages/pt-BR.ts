@@ -352,4 +352,19 @@ export const ptBR = {
     next: 'Próxima',
     viewImageN: 'Ver imagem {n}',
   },
+  error: {
+    title: 'Algo deu errado',
+    description: 'Ocorreu um erro inesperado. Tente novamente.',
+    tryAgain: 'Tentar novamente',
+    backToHome: 'Voltar para a página inicial',
+    backToSearch: 'Voltar para a busca',
+  },
+  notFound: {
+    title: 'Página não encontrada',
+    description: 'A página que você procura não existe ou foi removida.',
+    hotelTitle: 'Hotel não encontrado',
+    hotelDescription: 'O hotel que você procura não existe ou foi removido.',
+    bookingTitle: 'Reserva não encontrada',
+    bookingDescription: 'A reserva que você procura não foi encontrada.',
+  },
 } as const

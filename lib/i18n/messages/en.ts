@@ -352,4 +352,19 @@ export const en = {
     next: 'Next',
     viewImageN: 'View image {n}',
   },
+  error: {
+    title: 'Something went wrong',
+    description: 'An unexpected error occurred. Please try again.',
+    tryAgain: 'Try again',
+    backToHome: 'Back to home',
+    backToSearch: 'Back to search',
+  },
+  notFound: {
+    title: 'Page not found',
+    description: 'The page you are looking for does not exist or has been removed.',
+    hotelTitle: 'Hotel not found',
+    hotelDescription: 'The hotel you are looking for does not exist or has been removed.',
+    bookingTitle: 'Booking not found',
+    bookingDescription: 'The booking you are looking for was not found.',
+  },
 } as const

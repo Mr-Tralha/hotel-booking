@@ -1,9 +1,8 @@
 'use client'
 
 import { use, useEffect, useRef, useState, Suspense } from 'react'
-import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useSearchParams, useRouter, usePathname, notFound } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import { useTranslations } from '@/lib/i18n'
 import { useHotel } from '@/hooks/queries/use-hotel'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
 import { useHistoryStore } from '@/stores/history-store'
@@ -14,8 +13,7 @@ import { RoomList } from '@/components/hotel/room-list'
 import { HotelDetailSkeleton } from '@/components/hotel/hotel-detail-skeleton'
 import { SectionNav } from '@/components/hotel/section-nav'
 import { BookingSummary } from '@/components/hotel/booking-summary'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+
 
 const HotelReviews = dynamic(
   () => import('@/components/hotel/hotel-reviews').then((m) => m.HotelReviews),
@@ -101,22 +99,11 @@ function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string;
 
 function HotelDetailContent({ hotelId }: { hotelId: number }) {
   const { data: hotel, isLoading, error } = useHotel(hotelId)
-  const t = useTranslations('hotel')
 
   if (isLoading) return <HotelDetailSkeleton />
 
   if (error || !hotel) {
-    return (
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('notFound')}</h1>
-        <p className="mt-2 text-sm text-gray-500">
-          {t('notFoundDescription')}
-        </p>
-        <Link href="/search" className="mt-6">
-          <Button>{t('backToSearch')}</Button>
-        </Link>
-      </div>
-    )
+    notFound()
   }
 
   return <HotelDetailLoaded hotel={hotel} />
@@ -244,18 +231,9 @@ export default function HotelDetailPage({
 }) {
   const { hotelId } = use(params)
   const id = Number(hotelId)
-  const t = useTranslations('hotel')
 
   if (Number.isNaN(id) || id <= 0) {
-    return (
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('invalidId')}</h1>
-        <p className="mt-2 text-sm text-gray-500">{t('invalidIdDescription')}</p>
-        <Link href="/search" className="mt-6">
-          <Button>{t('backToSearch')}</Button>
-        </Link>
-      </div>
-    )
+    notFound()
   }
 
   return (

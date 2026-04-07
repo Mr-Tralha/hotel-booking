@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { useTranslations } from '@/lib/i18n'
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
@@ -33,6 +33,21 @@ function SearchResults() {
 
   const { data, isLoading } = useHotels(apiParams)
 
+  const shouldScrollRef = useRef(false)
+
+  useEffect(() => {
+    if (!isLoading && shouldScrollRef.current) {
+      shouldScrollRef.current = false
+      const el = document.getElementById('hotel-results')
+      if (!el) return
+      requestAnimationFrame(() => {
+        const navbarHeight = 60
+        const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+        window.scrollTo({ top, behavior: 'smooth' })
+      })
+    }
+  }, [isLoading])
+
   const total = data?.total ?? 0
   const limit = data?.limit ?? 9
 
@@ -56,14 +71,7 @@ function SearchResults() {
             sort,
           }}
           onAfterSubmit={() => {
-            const el = document.getElementById('hotel-results')
-            if (!el) return
-            // Defer layout read to next frame to avoid forced reflow during submit
-            requestAnimationFrame(() => {
-              const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
-              const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
-              window.scrollTo({ top, behavior: 'smooth' })
-            })
+            shouldScrollRef.current = true
           }}
         />
       </div>

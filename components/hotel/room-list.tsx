@@ -1,10 +1,11 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { RoomCard } from '@/components/room/room-card'
 import { RoomDetailModal } from '@/components/room/room-detail-modal'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
+import { useBookingStore } from '@/stores/booking-store'
 import type { Hotel, Room } from '@/types/mock-db'
 
 interface RoomListProps {
@@ -20,6 +21,22 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
   const adults = Number(searchParams.get('adults')) || 2
   const children = Number(searchParams.get('children')) || 0
   const totalGuests = adults + children
+
+  const selectedRooms = useBookingStore((s) => s.selectedRooms)
+  const setSelectedRooms = useBookingStore((s) => s.setSelectedRooms)
+
+  // Auto-deselect rooms that can't accommodate the current guest count
+  useEffect(() => {
+    if (!rooms.length || !selectedRooms.length) return
+    const roomCapacityMap = new Map(rooms.map((r) => [r.id, r.maxGuests]))
+    const valid = selectedRooms.filter((sr) => {
+      const maxGuests = roomCapacityMap.get(sr.id)
+      return maxGuests === undefined || maxGuests >= totalGuests
+    })
+    if (valid.length !== selectedRooms.length) {
+      setSelectedRooms(valid, hotel.id)
+    }
+  }, [rooms, totalGuests]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section id="quartos">

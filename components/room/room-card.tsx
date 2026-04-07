@@ -38,11 +38,13 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
     <div
       role="button"
       tabIndex={0}
-      onClick={onOpenModal}
+      onClick={!exceedsCapacity ? onOpenModal : () => { }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onOpenModal()
+          if (!exceedsCapacity) {
+            onOpenModal()
+          }
         }
       }}
       className={cn(
@@ -57,7 +59,7 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
       {/* Room image */}
       <RoomImage
         room={room}
-        onOpenLightbox={onOpenLightbox}
+        onOpenLightbox={!exceedsCapacity ? onOpenLightbox : () => { }}
       />
 
       {/* Room info */}
@@ -73,7 +75,7 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
             pricePerNight={room.pricePerNight}
             available={room.available}
             isSelected={isSelected}
-            onToggle={handleToggle}
+            onToggle={!exceedsCapacity ? handleToggle : () => { }}
             disabled={exceedsCapacity}
           />
         </div>

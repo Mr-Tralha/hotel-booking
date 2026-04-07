@@ -44,7 +44,7 @@ export function RecentSearches() {
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {recentSearches.map((search, i) => (
+        {recentSearches.slice(0, 5).map((search, i) => (
           <button
             key={`search-${i}`}
             type="button"

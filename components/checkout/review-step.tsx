@@ -1,14 +1,16 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { reviewSchema, type ReviewForm } from '@/lib/validations/checkout'
+import { createReviewSchema, type ReviewForm } from '@/lib/validations/checkout'
 import type { PersonalDataForm, PaymentForm } from '@/lib/validations/checkout'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
 import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 interface ReviewStepProps {
   personalData: PersonalDataForm
@@ -34,6 +36,11 @@ export function ReviewStep({
   const adults = useBookingStore((s) => s.adults)
   const children = useBookingStore((s) => s.children)
   const [showTerms, setShowTerms] = useState(false)
+  const t = useTranslations('checkout')
+  const tc = useTranslations('common')
+  const tv = useTranslations('validation')
+  const locale = useLocale()
+  const schema = useMemo(() => createReviewSchema(tv), [tv])
 
   const nights =
     checkIn && checkOut
@@ -49,7 +56,7 @@ export function ReviewStep({
     handleSubmit,
     formState: { errors },
   } = useForm<ReviewForm>({
-    resolver: zodResolver(reviewSchema),
+    resolver: zodResolver(schema),
     defaultValues: { acceptTerms: undefined as unknown as true },
   })
 
@@ -61,26 +68,26 @@ export function ReviewStep({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <h2 className="text-lg font-semibold text-gray-900">Revisão da Reserva</h2>
+      <h2 className="text-lg font-semibold text-gray-900">{t('reviewTitle')}</h2>
 
       {/* Hotel + Room summary */}
       <section className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700">Hospedagem</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{t('accommodation')}</h3>
         {hotel && (
           <p className="text-sm text-gray-900 font-medium">{hotel.name}</p>
         )}
         {checkIn && checkOut && (
           <p className="text-sm text-gray-600">
-            {formatDate(new Date(checkIn))} → {formatDate(new Date(checkOut))}
+            {formatDate(new Date(checkIn), locale)} → {formatDate(new Date(checkOut), locale)}
             <span className="ml-1 text-gray-400">
-              ({nights} {nights === 1 ? 'noite' : 'noites'})
+              ({tc('nightCount', { count: nights })})
             </span>
           </p>
         )}
         <p className="text-sm text-gray-600">
-          <span className="font-medium text-gray-900">{adults} {adults === 1 ? 'adulto' : 'adultos'}</span>
+          <span className="font-medium text-gray-900">{tc('adultCount', { count: adults })}</span>
           {children > 0 && (
-            <span>, {children} {children === 1 ? 'criança' : 'crianças'}</span>
+            <span>, {tc('childCount', { count: children })}</span>
           )}
         </p>
         <ul className="space-y-1">
@@ -88,8 +95,8 @@ export function ReviewStep({
             <li key={room.id} className="flex justify-between text-sm">
               <span className="text-gray-600">{room.name}</span>
               <span className="font-medium text-gray-900">
-                {formatCurrency(room.pricePerNight)}
-                <span className="text-xs text-gray-400">/noite</span>
+                {formatCurrency(room.pricePerNight, locale)}
+                <span className="text-xs text-gray-400">{tc('perNight')}</span>
               </span>
             </li>
           ))}
@@ -103,32 +110,35 @@ export function ReviewStep({
         subtotal={subtotal}
         taxes={taxes}
         total={total}
+        locale={locale}
+        tc={tc}
+        t={t}
       />
 
       {/* Personal data summary */}
       <section className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-gray-700">Dados Pessoais</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{t('personalDataSection')}</h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <dt className="text-gray-500">Nome</dt>
+          <dt className="text-gray-500">{t('nameLabel')}</dt>
           <dd className="text-gray-900">{personalData.fullName}</dd>
-          <dt className="text-gray-500">E-mail</dt>
+          <dt className="text-gray-500">{t('emailLabel')}</dt>
           <dd className="text-gray-900">{personalData.email}</dd>
-          <dt className="text-gray-500">Telefone</dt>
+          <dt className="text-gray-500">{t('phoneLabel')}</dt>
           <dd className="text-gray-900">{personalData.phone}</dd>
-          <dt className="text-gray-500">CPF</dt>
+          <dt className="text-gray-500">{t('cpfLabel')}</dt>
           <dd className="text-gray-900">{personalData.cpf}</dd>
         </dl>
       </section>
 
       {/* Payment summary */}
       <section className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-gray-700">Pagamento</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{t('paymentSection')}</h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <dt className="text-gray-500">Cartão</dt>
+          <dt className="text-gray-500">{t('cardLabel')}</dt>
           <dd className="text-gray-900 font-mono text-xs">{maskedCard}</dd>
-          <dt className="text-gray-500">Titular</dt>
+          <dt className="text-gray-500">{t('holderLabel')}</dt>
           <dd className="text-gray-900">{paymentData.cardHolder}</dd>
-          <dt className="text-gray-500">Validade</dt>
+          <dt className="text-gray-500">{t('expiryLabel')}</dt>
           <dd className="text-gray-900">{paymentData.expiry}</dd>
         </dl>
       </section>
@@ -143,13 +153,13 @@ export function ReviewStep({
             {...register('acceptTerms')}
           />
           <label htmlFor="acceptTerms" className="text-sm text-gray-600">
-            Li e aceito os{' '}
+            {t('termsCheckbox')}{' '}
             <button
               type="button"
               className="text-blue-600 underline hover:text-blue-700"
               onClick={() => setShowTerms(true)}
             >
-              termos e condições
+              {t('termsLink')}
             </button>
           </label>
         </div>
@@ -166,34 +176,19 @@ export function ReviewStep({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Termos e condições"
+          aria-label={t('termsTitle')}
         >
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl max-h-[80vh] overflow-y-auto space-y-4">
-            <h3 className="text-lg font-bold text-gray-900">Termos e Condições</h3>
+            <h3 className="text-lg font-bold text-gray-900">{t('termsTitle')}</h3>
             <div className="text-sm text-gray-600 space-y-3">
-              <p>
-                Ao confirmar esta reserva, você concorda que os dados fornecidos são
-                verdadeiros e que autoriza a cobrança do valor total indicado.
-              </p>
-              <p>
-                A reserva está sujeita à disponibilidade e à política de cancelamento
-                do hotel. Cancelamentos fora do prazo previsto podem gerar cobranças
-                conforme a política do estabelecimento.
-              </p>
-              <p>
-                Seus dados pessoais serão utilizados exclusivamente para a realização
-                desta reserva e não serão compartilhados com terceiros sem seu
-                consentimento, conforme a Lei Geral de Proteção de Dados (LGPD).
-              </p>
-              <p>
-                Em caso de divergência entre as informações exibidas no momento da
-                reserva e as condições do hotel, prevalece o que for comunicado
-                diretamente pelo estabelecimento ao hóspede.
-              </p>
+              <p>{t('termsContent1')}</p>
+              <p>{t('termsContent2')}</p>
+              <p>{t('termsContent3')}</p>
+              <p>{t('termsContent4')}</p>
             </div>
             <div className="flex justify-end">
               <Button type="button" onClick={() => setShowTerms(false)}>
-                Entendi
+                {t('understood')}
               </Button>
             </div>
           </div>
@@ -203,10 +198,10 @@ export function ReviewStep({
       {/* Actions */}
       <div className="flex justify-between pt-2">
         <Button type="button" variant="secondary" size="lg" onClick={onBack}>
-          Voltar
+          {tc('back')}
         </Button>
         <Button type="submit" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? 'Processando...' : 'Confirmar reserva'}
+          {isSubmitting ? t('processing') : t('confirmBooking')}
         </Button>
       </div>
     </form>
@@ -219,42 +214,48 @@ function PriceBreakdown({
   subtotal,
   taxes,
   total,
+  locale,
+  tc,
+  t,
 }: {
   rooms: SelectedRoom[]
   nights: number
   subtotal: number
   taxes: number
   total: number
+  locale: string
+  tc: (key: string, params?: Record<string, string | number>) => string
+  t: (key: string, params?: Record<string, string | number>) => string
 }) {
   return (
     <section className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700">Detalhamento do preço</h3>
+      <h3 className="text-sm font-semibold text-gray-700">{t('priceBreakdown')}</h3>
 
       <div className="space-y-1 text-sm">
         {rooms.map((room) => (
           <div key={room.id} className="flex justify-between text-gray-600">
             <span>
-              {room.name} × {nights} {nights === 1 ? 'noite' : 'noites'}
+              {room.name} × {tc('nightCount', { count: nights })}
             </span>
-            <span>{formatCurrency(room.pricePerNight * nights)}</span>
+            <span>{formatCurrency(room.pricePerNight * nights, locale)}</span>
           </div>
         ))}
       </div>
 
       <div className="border-t border-gray-100 pt-2 space-y-1 text-sm">
         <div className="flex justify-between text-gray-600">
-          <span>Subtotal</span>
-          <span>{formatCurrency(subtotal)}</span>
+          <span>{tc('subtotal')}</span>
+          <span>{formatCurrency(subtotal, locale)}</span>
         </div>
         <div className="flex justify-between text-gray-600">
-          <span>Taxas e impostos (12%)</span>
-          <span>{formatCurrency(taxes)}</span>
+          <span>{tc('taxes')}</span>
+          <span>{formatCurrency(taxes, locale)}</span>
         </div>
       </div>
 
       <div className="border-t border-gray-200 pt-2 flex justify-between">
-        <span className="text-base font-semibold text-gray-900">Total</span>
-        <span className="text-xl font-bold text-gray-900">{formatCurrency(total)}</span>
+        <span className="text-base font-semibold text-gray-900">{tc('total')}</span>
+        <span className="text-xl font-bold text-gray-900">{formatCurrency(total, locale)}</span>
       </div>
     </section>
   )

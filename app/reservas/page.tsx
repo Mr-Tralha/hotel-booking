@@ -2,19 +2,23 @@
 
 import { useReservationsStore } from '@/stores/reservations-store'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { useTranslations, useLocale } from '@/lib/i18n'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function ReservasPage() {
   const bookings = useReservationsStore((s) => s.bookings)
+  const t = useTranslations('reservations')
+  const tc = useTranslations('common')
+  const locale = useLocale()
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8">
       <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-        Minhas Reservas
+        {t('title')}
       </h1>
       <p className="mt-1 text-sm text-gray-500">
-        Histórico de reservas realizadas
+        {t('subtitle')}
       </p>
 
       {bookings.length === 0 ? (
@@ -23,10 +27,10 @@ export default function ReservasPage() {
             <CalendarIcon />
           </div>
           <p className="mt-4 text-sm text-gray-500">
-            Você ainda não possui nenhuma reserva.
+            {t('empty')}
           </p>
           <Link href="/" className="mt-4">
-            <Button>Buscar hotéis</Button>
+            <Button>{t('searchHotels')}</Button>
           </Link>
         </div>
       ) : (
@@ -44,47 +48,46 @@ export default function ReservasPage() {
                   <p className="text-sm text-gray-500">{booking.hotelAddress}</p>
                 </div>
                 <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 self-start">
-                  Confirmada
+                  {t('confirmed')}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                 <div>
-                  <p className="text-gray-500">Check-in</p>
+                  <p className="text-gray-500">{t('checkIn')}</p>
                   <p className="font-medium text-gray-900">
-                    {formatDate(new Date(booking.checkIn))}
+                    {formatDate(new Date(booking.checkIn), locale)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Check-out</p>
+                  <p className="text-gray-500">{t('checkOut')}</p>
                   <p className="font-medium text-gray-900">
-                    {formatDate(new Date(booking.checkOut))}
+                    {formatDate(new Date(booking.checkOut), locale)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Hóspedes</p>
+                  <p className="text-gray-500">{t('guests')}</p>
                   <p className="font-medium text-gray-900">
-                    {booking.adults} {booking.adults === 1 ? 'adulto' : 'adultos'}
+                    {tc('adultCount', { count: booking.adults })}
                     {booking.children > 0 &&
-                      `, ${booking.children} ${booking.children === 1 ? 'criança' : 'crianças'}`}
+                      `, ${tc('childCount', { count: booking.children })}`}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Total</p>
+                  <p className="text-gray-500">{t('total')}</p>
                   <p className="font-bold text-gray-900">
-                    {formatCurrency(booking.total)}
+                    {formatCurrency(booking.total, locale)}
                   </p>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-gray-400">
-                  Reserva #{booking.id.slice(0, 8)}... &middot;{' '}
-                  {formatDate(new Date(booking.createdAt))}
+                  {t('bookingId', { id: booking.id.slice(0, 8) })}... &middot;{' '}
+                  {formatDate(new Date(booking.createdAt), locale)}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {booking.rooms.length}{' '}
-                  {booking.rooms.length === 1 ? 'quarto' : 'quartos'}:{' '}
+                  {tc('roomCount', { count: booking.rooms.length })}:{' '}
                   {booking.rooms.map((r) => r.name).join(', ')}
                 </p>
               </div>

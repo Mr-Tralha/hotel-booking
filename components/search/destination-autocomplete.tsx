@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSuggestions } from '@/hooks/queries/use-suggestions'
 import { useHistoryStore } from '@/stores/history-store'
+import { useTranslations } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 interface DestinationAutocompleteProps {
@@ -13,18 +14,13 @@ interface DestinationAutocompleteProps {
 
 const DEBOUNCE_MS = 300
 
-const typeLabels: Record<string, string> = {
-  city: 'Cidade',
-  beach: 'Praia',
-  island: 'Ilha',
-  nature: 'Natureza',
-}
-
 export function DestinationAutocomplete({
   value,
   onChange,
   error,
 }: DestinationAutocompleteProps) {
+  const t = useTranslations('search')
+  const tl = useTranslations('labels')
   const [inputValue, setInputValue] = useState(value)
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -50,7 +46,7 @@ export function DestinationAutocomplete({
         seen.add(s.destination)
         items.push({
           label: s.destination,
-          sublabel: 'Pesquisa recente',
+          sublabel: t('recentSearch'),
           type: 'search',
           value: s.destination,
         })
@@ -167,7 +163,7 @@ export function DestinationAutocomplete({
         htmlFor="destination"
         className="text-sm font-medium text-gray-700"
       >
-        Destino
+        {t('destination')}
       </label>
       <div className="relative">
         <svg
@@ -196,7 +192,7 @@ export function DestinationAutocomplete({
           }
           aria-invalid={!!error}
           aria-describedby={error ? 'destination-error' : undefined}
-          placeholder="Para onde você vai?"
+          placeholder={t('destinationPlaceholder')}
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => {
@@ -264,7 +260,7 @@ export function DestinationAutocomplete({
               <div className="flex flex-col">
                 <span className="font-medium">{suggestion.name}</span>
                 <span className="text-xs text-gray-400">
-                  {typeLabels[suggestion.type] || suggestion.type} &middot;{' '}
+                  {tl('suggestionType.' + suggestion.type)} &middot;{' '}
                   {suggestion.country}
                 </span>
               </div>
@@ -275,7 +271,7 @@ export function DestinationAutocomplete({
 
       {isOpen && suggestions && suggestions.length === 0 && !isLoading && (
         <div className="absolute top-full left-0 right-0 z-20 mt-1 rounded-lg border border-gray-200 bg-white p-4 text-center text-sm text-gray-500 shadow-lg">
-          Nenhum destino encontrado
+          {t('noDestinationFound')}
         </div>
       )}
 
@@ -285,7 +281,7 @@ export function DestinationAutocomplete({
           className="absolute top-full left-0 right-0 z-20 mt-1 max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg"
         >
           <li className="px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">
-            Recentes
+            {t('recents')}
           </li>
           {historyItems.map((item, index) => (
             <li

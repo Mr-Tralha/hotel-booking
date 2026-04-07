@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useState, useCallback, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface ImageLightboxProps {
   images: string[]
@@ -19,8 +20,10 @@ export function ImageLightbox({
   images,
   initialIndex = 0,
   onClose,
-  altPrefix = 'Imagem',
+  altPrefix,
 }: ImageLightboxProps) {
+  const t = useTranslations('lightbox')
+  const tc = useTranslations('common')
   const [index, setIndex] = useState(initialIndex)
   const [touchStart, setTouchStart] = useState<number | null>(null)
 
@@ -68,7 +71,7 @@ export function ImageLightbox({
       className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90"
       role="dialog"
       aria-modal="true"
-      aria-label="Visualizar imagem"
+      aria-label={t('viewImage')}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -77,7 +80,7 @@ export function ImageLightbox({
         type="button"
         onClick={onClose}
         className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
-        aria-label="Fechar"
+        aria-label={tc('close')}
       >
         <CloseIcon />
       </button>
@@ -93,7 +96,7 @@ export function ImageLightbox({
           type="button"
           onClick={() => goTo(index - 1)}
           className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm hover:bg-white/20 transition-colors hidden md:flex"
-          aria-label="Anterior"
+          aria-label={t('previous')}
         >
           <ChevronLeftIcon />
         </button>
@@ -103,7 +106,7 @@ export function ImageLightbox({
       <div className="relative mx-4 md:mx-16 h-[80vh] w-full max-w-5xl">
         <Image
           src={images[index]}
-          alt={`${altPrefix} ${index + 1}`}
+          alt={altPrefix ? `${altPrefix} ${index + 1}` : t('viewImageN', { n: index + 1 })}
           fill
           sizes="90vw"
           className="object-contain"
@@ -117,7 +120,7 @@ export function ImageLightbox({
           type="button"
           onClick={() => goTo(index + 1)}
           className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm hover:bg-white/20 transition-colors hidden md:flex"
-          aria-label="Próxima"
+          aria-label={t('next')}
         >
           <ChevronRightIcon />
         </button>
@@ -137,7 +140,7 @@ export function ImageLightbox({
                   ? 'ring-2 ring-white opacity-100'
                   : 'opacity-60 hover:opacity-100'
               )}
-              aria-label={`Ver imagem ${i + 1}`}
+              aria-label={t('viewImageN', { n: i + 1 })}
             >
               <Image src={src} alt="" fill sizes="64px" className="object-cover" />
             </button>

@@ -6,6 +6,7 @@ import { RoomCard } from '@/components/room/room-card'
 import { RoomDetailModal } from '@/components/room/room-detail-modal'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { useBookingStore } from '@/stores/booking-store'
+import { useTranslations } from '@/lib/i18n'
 import type { Hotel, Room } from '@/types/mock-db'
 
 interface RoomListProps {
@@ -14,6 +15,7 @@ interface RoomListProps {
 }
 
 export function RoomList({ hotel, rooms }: RoomListProps) {
+  const t = useTranslations('hotel')
   const [modalRoom, setModalRoom] = useState<Room | null>(null)
   const [lightboxImages, setLightboxImages] = useState<string[] | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState(0)
@@ -47,11 +49,11 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
     <section id="quartos">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-          Quartos Disponíveis
+          {t('availableRooms')}
         </h2>
         {roomsNeeded > 1 && (
           <span className="text-sm text-gray-500">
-            {selectedRooms.length}/{roomsNeeded} quartos selecionados
+            {t('roomsSelected', { selected: selectedRooms.length, needed: roomsNeeded })}
           </span>
         )}
       </div>
@@ -60,8 +62,7 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
         <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <WarningIcon />
           <span>
-            Este hotel tem apenas <strong>{totalAvailable}</strong> {totalAvailable === 1 ? 'unidade disponível' : 'unidades disponíveis'} no total,
-            mas sua busca solicitou <strong>{roomsNeeded}</strong> quartos.
+            {t('notEnoughUnits', { count: totalAvailable, needed: roomsNeeded })}
           </span>
         </div>
       )}

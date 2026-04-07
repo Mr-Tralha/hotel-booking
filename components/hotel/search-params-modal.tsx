@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,43 +10,46 @@ import { GuestSelector } from '@/components/search/guest-selector'
 import { Button } from '@/components/ui/button'
 import { BaseModal } from '@/components/ui/base-modal'
 import { useBookingStore } from '@/stores/booking-store'
+import { useTranslations } from '@/lib/i18n'
 
-const datesGuestsSchema = z
-  .object({
-    checkIn: z.string().min(1, 'Selecione a data de check-in'),
-    checkOut: z.string().min(1, 'Selecione a data de check-out'),
-    adults: z.number().min(1, 'Mínimo 1 adulto').max(10),
-    children: z.number().min(0).max(6),
-    rooms: z.number().min(1).max(5),
-  })
-  .refine(
-    (data) => {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      return new Date(data.checkIn + 'T00:00:00') >= today
-    },
-    { message: 'Check-in não pode ser no passado', path: ['checkIn'] }
-  )
-  .refine(
-    (data) => {
-      const diff =
-        new Date(data.checkOut + 'T00:00:00').getTime() -
-        new Date(data.checkIn + 'T00:00:00').getTime()
-      return diff / (1000 * 60 * 60 * 24) >= 1
-    },
-    { message: 'Check-out deve ser ao menos 1 dia após check-in', path: ['checkOut'] }
-  )
-  .refine(
-    (data) => {
-      const diff =
-        new Date(data.checkOut + 'T00:00:00').getTime() -
-        new Date(data.checkIn + 'T00:00:00').getTime()
-      return diff / (1000 * 60 * 60 * 24) <= 30
-    },
-    { message: 'Estadia máxima de 30 dias', path: ['checkOut'] }
-  )
+function createDatesGuestsSchema(tv: (key: string) => string) {
+  return z
+    .object({
+      checkIn: z.string().min(1, tv('checkInRequired')),
+      checkOut: z.string().min(1, tv('checkOutRequired')),
+      adults: z.number().min(1, tv('adultsMin')).max(10),
+      children: z.number().min(0).max(6),
+      rooms: z.number().min(1).max(5),
+    })
+    .refine(
+      (data) => {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return new Date(data.checkIn + 'T00:00:00') >= today
+      },
+      { message: tv('checkInPast'), path: ['checkIn'] }
+    )
+    .refine(
+      (data) => {
+        const diff =
+          new Date(data.checkOut + 'T00:00:00').getTime() -
+          new Date(data.checkIn + 'T00:00:00').getTime()
+        return diff / (1000 * 60 * 60 * 24) >= 1
+      },
+      { message: tv('checkOutMinDays'), path: ['checkOut'] }
+    )
+    .refine(
+      (data) => {
+        const diff =
+          new Date(data.checkOut + 'T00:00:00').getTime() -
+          new Date(data.checkIn + 'T00:00:00').getTime()
+        return diff / (1000 * 60 * 60 * 24) <= 30
+      },
+      { message: tv('maxStay'), path: ['checkOut'] }
+    )
+}
 
-type DatesGuestsForm = z.infer<typeof datesGuestsSchema>
+type DatesGuestsForm = z.infer<ReturnType<typeof createDatesGuestsSchema>>
 
 interface SearchParamsModalProps {
   onClose: () => void
@@ -56,13 +60,17 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const setSearchParams = useBookingStore((s) => s.setSearchParams)
+  const tv = useTranslations('validation')
+  const t = useTranslations('hotel')
+  const tc = useTranslations('common')
+  const schema = useMemo(() => createDatesGuestsSchema(tv), [tv])
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<DatesGuestsForm>({
-    resolver: zodResolver(datesGuestsSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       checkIn: '',
       checkOut: '',
@@ -101,24 +109,24 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
       isOpen
       onClose={onCancel}
       closeOnBackdropClick={false}
-      ariaLabel="Informar datas e hóspedes"
+      ariaLabel={t('informDatesAndGuests')}
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-5 flex items-start justify-between">
           <div>
             <h2 className="text-lg font-bold text-gray-900">
-              Informe as datas e hóspedes
+              {t('informDatesAndGuests')}
             </h2>
             <p className="mt-0.5 text-sm text-gray-500">
-              Necessário para ver disponibilidade e preços.
+              {t('informDatesDescription')}
             </p>
           </div>
           <button
             type="button"
             onClick={onCancel}
             className="ml-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-            aria-label="Fechar"
+            aria-label={tc('close')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -192,10 +200,10 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
 
           <div className="flex gap-3 pt-1">
             <Button type="button" variant="secondary" className="flex-1" onClick={onCancel}>
-              Cancelar
+              {tc('cancel')}
             </Button>
             <Button type="submit" className="flex-1">
-              Confirmar
+              {tc('confirm')}
             </Button>
           </div>
         </form>

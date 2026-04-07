@@ -5,6 +5,7 @@ import { useBookingStore } from '@/stores/booking-store'
 import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useTranslations, useLocale } from '@/lib/i18n'
 import type { Hotel } from '@/types/mock-db'
 import type { SelectedRoom } from '@/stores/booking-store'
 
@@ -25,6 +26,9 @@ export default function ConfirmationPage({
   params: Promise<{ bookingId: string }>
 }) {
   const { bookingId } = use(params)
+  const t = useTranslations('confirmation')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const hotel = useBookingStore((s) => s.hotel)
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const checkIn = useBookingStore((s) => s.checkIn)
@@ -80,16 +84,16 @@ export default function ConfirmationPage({
         </div>
 
         <h1 className="mt-6 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
-          Reserva confirmada!
+          {t('title')}
         </h1>
         <p className="mt-2 text-center text-sm text-gray-500">
-          Sua reserva foi realizada com sucesso. Guarde o número abaixo.
+          {t('subtitle')}
         </p>
 
         {/* Booking ID */}
         <div className="mt-6 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 p-4 text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-blue-600">
-            Número da reserva
+            {t('bookingNumber')}
           </p>
           <p className="mt-1 text-lg font-bold text-blue-900 font-mono break-all sm:text-xl">
             {bookingId}
@@ -99,11 +103,11 @@ export default function ConfirmationPage({
         {/* Booking details */}
         {data && (
           <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-5">
-            <h2 className="font-semibold text-gray-900">Detalhes da reserva</h2>
+            <h2 className="font-semibold text-gray-900">{t('bookingDetails')}</h2>
 
             {/* Hotel */}
             <div className="space-y-1">
-              <p className="text-sm text-gray-500">Hotel</p>
+              <p className="text-sm text-gray-500">{t('hotel')}</p>
               <p className="font-medium text-gray-900">{data.hotel.name}</p>
               <p className="text-sm text-gray-500">{data.hotel.address}</p>
             </div>
@@ -111,27 +115,27 @@ export default function ConfirmationPage({
             {/* Dates & guests */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Check-in</p>
+                <p className="text-gray-500">{t('checkIn')}</p>
                 <p className="font-medium text-gray-900">
-                  {formatDate(new Date(data.checkIn))}
+                  {formatDate(new Date(data.checkIn), locale)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Check-out</p>
+                <p className="text-gray-500">{t('checkOut')}</p>
                 <p className="font-medium text-gray-900">
-                  {formatDate(new Date(data.checkOut))}
+                  {formatDate(new Date(data.checkOut), locale)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Noites</p>
+                <p className="text-gray-500">{t('nights')}</p>
                 <p className="font-medium text-gray-900">{nights}</p>
               </div>
               <div>
-                <p className="text-gray-500">Hóspedes</p>
+                <p className="text-gray-500">{t('guests')}</p>
                 <p className="font-medium text-gray-900">
-                  {data.adults} {data.adults === 1 ? 'adulto' : 'adultos'}
+                  {tc('adultCount', { count: data.adults })}
                   {data.children > 0 &&
-                    `, ${data.children} ${data.children === 1 ? 'criança' : 'crianças'}`}
+                    `, ${tc('childCount', { count: data.children })}`}
                 </p>
               </div>
             </div>
@@ -139,14 +143,13 @@ export default function ConfirmationPage({
             {/* Rooms */}
             <div className="space-y-2">
               <p className="text-sm text-gray-500">
-                {data.selectedRooms.length}{' '}
-                {data.selectedRooms.length === 1 ? 'quarto' : 'quartos'}
+                {tc('roomCount', { count: data.selectedRooms.length })}
               </p>
               {data.selectedRooms.map((room) => (
                 <div key={room.id} className="flex justify-between text-sm">
                   <span className="text-gray-600">{room.name}</span>
                   <span className="font-medium text-gray-900">
-                    {formatCurrency(room.pricePerNight * nights)}
+                    {formatCurrency(room.pricePerNight * nights, locale)}
                   </span>
                 </div>
               ))}
@@ -155,17 +158,17 @@ export default function ConfirmationPage({
             {/* Total */}
             <div className="border-t border-gray-200 pt-3 space-y-1.5 text-sm">
               <div className="flex justify-between text-gray-500">
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
+                <span>{tc('subtotal')}</span>
+                <span>{formatCurrency(subtotal, locale)}</span>
               </div>
               <div className="flex justify-between text-gray-500">
-                <span>Taxas e impostos (12%)</span>
-                <span>{formatCurrency(taxes)}</span>
+                <span>{tc('taxes')}</span>
+                <span>{formatCurrency(taxes, locale)}</span>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-2">
-                <span className="font-semibold text-gray-900">Total pago</span>
+                <span className="font-semibold text-gray-900">{t('totalPaid')}</span>
                 <span className="text-lg font-bold text-gray-900">
-                  {formatCurrency(total)}
+                  {formatCurrency(total, locale)}
                 </span>
               </div>
             </div>
@@ -174,14 +177,14 @@ export default function ConfirmationPage({
 
         {!data && (
           <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 text-center text-sm text-gray-500">
-            Os detalhes da reserva não estão mais disponíveis nesta sessão.
+            {t('detailsUnavailable')}
           </div>
         )}
 
         {/* Actions */}
         <div className="mt-8 flex justify-center">
           <Link href="/" onClick={handleNewSearch}>
-            <Button size="lg">Fazer nova busca</Button>
+            <Button size="lg">{t('newSearch')}</Button>
           </Link>
         </div>
       </div>

@@ -2,8 +2,10 @@
 
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from '@/lib/i18n'
 
 export function ShareButton({ hotelName }: { hotelName: string }) {
+  const t = useTranslations('hotel')
   const [copied, setCopied] = useState(false)
 
   const handleCopy = useCallback(async () => {
@@ -16,11 +18,11 @@ export function ShareButton({ hotelName }: { hotelName: string }) {
     <div className="flex items-center gap-2">
       <Button variant="secondary" size="sm" onClick={handleCopy}>
         <ShareIcon />
-        {copied ? 'Copiado!' : 'Compartilhar'}
+        {copied ? t('copied') : t('share')}
       </Button>
       {copied && (
         <span className="text-xs text-green-600" aria-live="polite">
-          Link copiado!
+          {t('linkCopied')}
         </span>
       )}
     </div>

@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
-import { ROOM_AMENITY_LABELS, BED_TYPE_LABELS } from '@/lib/labels'
 import { useBookingStore } from '@/stores/booking-store'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Room } from '@/types/mock-db'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 interface RoomCardProps {
   room: Room
@@ -21,6 +21,10 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
   const toggleRoom = useBookingStore((s) => s.toggleRoom)
   const isSelected = selectedRooms.some((r) => r.id === room.id)
   const exceedsCapacity = totalGuests > 0 && totalGuests > room.maxGuests
+  const t = useTranslations('hotel')
+  const tc = useTranslations('common')
+  const tl = useTranslations('labels')
+  const locale = useLocale()
 
   function handleToggle(e: React.MouseEvent) {
     e.stopPropagation()
@@ -31,7 +35,7 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
   }
 
   const bedsDescription = room.beds
-    .map((b) => `${b.quantity} ${BED_TYPE_LABELS[b.type]}`)
+    .map((b) => `${b.quantity} ${tl('bedType.' + b.type)}`)
     .join(' + ')
 
   return (
@@ -60,14 +64,15 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
       <RoomImage
         room={room}
         onOpenLightbox={!exceedsCapacity ? onOpenLightbox : () => { }}
+        t={t}
       />
 
       {/* Room info */}
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <div className="flex-1 space-y-2">
-            <RoomHeader room={room} bedsDescription={bedsDescription} exceedsCapacity={exceedsCapacity} totalGuests={totalGuests} />
-            <RoomAmenities amenities={room.amenities} />
+            <RoomHeader room={room} bedsDescription={bedsDescription} exceedsCapacity={exceedsCapacity} totalGuests={totalGuests} t={t} />
+            <RoomAmenities amenities={room.amenities} tl={tl} />
           </div>
 
           {/* Price + action */}
@@ -77,6 +82,9 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
             isSelected={isSelected}
             onToggle={!exceedsCapacity ? handleToggle : () => { }}
             disabled={exceedsCapacity}
+            t={t}
+            tc={tc}
+            locale={locale}
           />
         </div>
       </div>
@@ -89,9 +97,11 @@ export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLi
 function RoomImage({
   room,
   onOpenLightbox,
+  t,
 }: {
   room: Room
   onOpenLightbox: (images: string[], index: number) => void
+  t: (key: string, params?: Record<string, string | number>) => string
 }) {
   if (!room.images[0]) return null
 
@@ -111,7 +121,7 @@ function RoomImage({
           onOpenLightbox(room.images, 0)
         }}
         className="absolute inset-0 flex items-end justify-end p-2 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity"
-        aria-label="Ampliar imagem"
+        aria-label={t('enlargeImage')}
       >
         <span className="rounded-md bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 backdrop-blur-sm">
           <ExpandIcon />
@@ -121,15 +131,15 @@ function RoomImage({
       {room.available <= 3 && room.available > 0 && (
         <span className="absolute right-2 top-2 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
           {room.available === 1
-            ? 'Último disponível!'
-            : `Apenas ${room.available} disponíveis!`}
+            ? t('lastAvailable')
+            : t('onlyAvailable', { count: room.available })}
         </span>
       )}
     </div>
   )
 }
 
-function RoomHeader({ room, bedsDescription, exceedsCapacity, totalGuests }: { room: Room; bedsDescription: string; exceedsCapacity: boolean; totalGuests: number }) {
+function RoomHeader({ room, bedsDescription, exceedsCapacity, totalGuests, t }: { room: Room; bedsDescription: string; exceedsCapacity: boolean; totalGuests: number; t: (key: string, params?: Record<string, string | number>) => string }) {
   return (
     <>
       <h3 className="text-lg font-semibold text-gray-900">{room.name}</h3>
@@ -137,7 +147,7 @@ function RoomHeader({ room, bedsDescription, exceedsCapacity, totalGuests }: { r
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
         <span className="flex items-center gap-1">
           <AreaIcon />
-          {room.size} m²
+          {t('squareMeters', { size: room.size })}
         </span>
         <span className="flex items-center gap-1">
           <BedIcon />
@@ -145,22 +155,24 @@ function RoomHeader({ room, bedsDescription, exceedsCapacity, totalGuests }: { r
         </span>
         <span className={cn('flex items-center gap-1', exceedsCapacity && 'text-red-600 font-medium')}>
           <GuestsIcon />
-          Até {room.maxGuests} hóspedes
+          {t('maxGuests', { count: room.maxGuests })}
         </span>
       </div>
       {exceedsCapacity && (
         <p className="text-xs font-medium text-red-600">
-          Capacidade insuficiente para {totalGuests} hóspedes
+          {t('capacityInsufficient', { count: totalGuests })}
         </p>
       )}
     </>
   )
 }
 
-export function RoomAmenities({ amenities }: { amenities: Room['amenities']; maxVisible?: number }) {
+export function RoomAmenities({ amenities, tl }: { amenities: Room['amenities']; maxVisible?: number; tl?: (key: string) => string }) {
   const maxVisible = 5
   const displayAmenities = amenities.slice(0, maxVisible)
   const extraCount = amenities.length - displayAmenities.length
+  const defaultTl = useTranslations('labels')
+  const translate = tl || defaultTl
 
   return (
     <div className="flex flex-wrap gap-1.5">
@@ -169,7 +181,7 @@ export function RoomAmenities({ amenities }: { amenities: Room['amenities']; max
           key={amenity}
           className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
         >
-          {ROOM_AMENITY_LABELS[amenity]}
+          {translate('roomAmenity.' + amenity)}
         </span>
       ))}
       {extraCount > 0 && (
@@ -187,20 +199,26 @@ function RoomPrice({
   isSelected,
   onToggle,
   disabled,
+  t,
+  tc,
+  locale,
 }: {
   pricePerNight: number
   available: number
   isSelected: boolean
   onToggle: (e: React.MouseEvent) => void
   disabled?: boolean
+  t: (key: string, params?: Record<string, string | number>) => string
+  tc: (key: string, params?: Record<string, string | number>) => string
+  locale: string
 }) {
   return (
     <div className="flex flex-row items-end justify-between gap-3 border-t border-gray-100 pt-3 sm:flex-col sm:items-end sm:border-t-0 sm:pt-0 sm:pl-4">
       <div className="flex-row flex items-baseline gap-1">
         <span className="text-xl font-bold text-gray-900">
-          {formatCurrency(pricePerNight)}
+          {formatCurrency(pricePerNight, locale)}
         </span>
-        <span className="text-xs text-gray-500 block">/noite</span>
+        <span className="text-xs text-gray-500 block">{tc('perNight')}</span>
       </div>
 
       <Button
@@ -215,10 +233,10 @@ function RoomPrice({
         }
       >
         {available === 0
-          ? 'Indisponível'
+          ? t('unavailable')
           : isSelected
-            ? '✓ Selecionado'
-            : 'Selecionar'}
+            ? t('selectedRoom')
+            : t('selectRoom')}
       </Button>
     </div>
   )

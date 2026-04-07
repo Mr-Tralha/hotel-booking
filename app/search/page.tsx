@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense } from 'react'
+import { useTranslations } from '@/lib/i18n'
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { SearchForm } from '@/components/search/search-form'
@@ -10,6 +11,9 @@ import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 import { Pagination } from '@/components/ui/pagination'
 
 function SearchResults() {
+  const t = useTranslations('search')
+  const tc = useTranslations('common')
+
   const {
     destination,
     checkIn,
@@ -70,12 +74,12 @@ function SearchResults() {
           <div className="mb-4">
             <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
               {destination
-                ? `Hotéis em ${destination}`
-                : 'Resultados da busca'}
+                ? t('hotelsIn', { destination })
+                : t('searchResults')}
             </h1>
             {data && (
               <p className="mt-0.5 text-sm text-gray-500">
-                {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
+                {isLoading ? tc('loading') : total === 0 ? t('noHotelsFound') : t('hotelCount', { count: total })}
               </p>
             )}
           </div>
@@ -85,7 +89,7 @@ function SearchResults() {
             hotels={data?.data}
             isLoading={isLoading}
             skeletonCount={6}
-            emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
+            emptyMessage={t('emptyFilterMessage')}
             columns={3}
           />
 

@@ -3,6 +3,7 @@
 import type { Hotel } from '@/types/mock-db'
 import { HotelCard } from './hotel-card'
 import { HotelCardSkeleton } from './hotel-card-skeleton'
+import { useTranslations } from '@/lib/i18n'
 
 interface HotelListProps {
   hotels?: Hotel[]
@@ -16,9 +17,11 @@ export function HotelList({
   hotels,
   isLoading,
   skeletonCount = 4,
-  emptyMessage = 'Nenhum hotel encontrado.',
+  emptyMessage,
   columns = 3,
 }: HotelListProps) {
+  const ts = useTranslations('search')
+  const resolvedEmptyMessage = emptyMessage ?? ts('noHotelsFound')
   const gridCols =
     columns === 2
       ? 'grid-cols-1 sm:grid-cols-2'
@@ -37,7 +40,7 @@ export function HotelList({
   if (!hotels || hotels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-lg text-gray-500">{emptyMessage}</p>
+        <p className="text-lg text-gray-500">{resolvedEmptyMessage}</p>
       </div>
     )
   }

@@ -24,6 +24,7 @@ interface BookingState {
     children: number
     rooms: number
   }) => void
+  setHotel: (hotel: Hotel) => void
   selectRoom: (hotel: Hotel, room: Room) => void
   toggleRoom: (room: SelectedRoom) => void
   setSelectedRooms: (rooms: SelectedRoom[]) => void
@@ -46,6 +47,8 @@ export const useBookingStore = create<BookingState>((set) => ({
   ...initialState,
 
   setSearchParams: (params) => set(params),
+
+  setHotel: (hotel) => set({ hotel }),
 
   selectRoom: (hotel, room) => set({ hotel, room }),
 

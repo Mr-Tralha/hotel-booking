@@ -15,6 +15,8 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
+  const setHotel = useBookingStore((s) => s.setHotel)
+  const setSearchParams = useBookingStore((s) => s.setSearchParams)
 
   // URL uses camelCase (checkIn/checkOut) — must match use-search-filters
   const checkIn = searchParams.get('checkIn') ?? ''
@@ -34,9 +36,17 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
     : 0
 
   function handleCheckout() {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('rooms', selectedRooms.map((r) => r.id).join(','))
-    router.push(`/checkout?${params.toString()}`)
+    setHotel(hotel)
+    if (checkIn && checkOut) {
+      setSearchParams({
+        checkIn,
+        checkOut,
+        adults: Number(searchParams.get('adults')) || 2,
+        children: Number(searchParams.get('children')) || 0,
+        rooms: Number(searchParams.get('rooms')) || 1,
+      })
+    }
+    router.push('/checkout')
   }
 
   return (

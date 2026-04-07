@@ -139,7 +139,6 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
               </Suspense>
             )}
 
-            <FeaturedHotels />
           </div>
 
           {/* Sidebar */}
@@ -155,6 +154,8 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
           <BookingSummary hotel={hotel} />
         </div>
       </div>
+
+      <FeaturedHotels />
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { SearchForm } from '@/components/search/search-form'
+import { RecentSearches } from '@/components/search/recent-searches'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 
 export default function Home() {
@@ -25,9 +26,12 @@ export default function Home() {
       </section>
 
       {/* Search card — sobrepõe a hero */}
-      <div className="relative z-10 mx-auto -mt-20 w-full max-w-xl px-4 sm:-mt-24 md:-mt-28">
+      <div className="relative z-10 mx-auto -mt-20 w-full max-w-6xl px-4 sm:-mt-24 md:-mt-28">
         <SearchForm />
       </div>
+
+      {/* Recent searches */}
+      <RecentSearches />
 
       {/* Featured hotels */}
       <FeaturedHotels />

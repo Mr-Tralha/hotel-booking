@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSuggestions } from '@/hooks/queries/use-suggestions'
+import { useHistoryStore } from '@/stores/history-store'
 import { cn } from '@/lib/utils'
 
 interface DestinationAutocompleteProps {
@@ -27,6 +28,7 @@ export function DestinationAutocomplete({
   const [inputValue, setInputValue] = useState(value)
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -34,6 +36,39 @@ export function DestinationAutocomplete({
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   const { data: suggestions, isLoading } = useSuggestions(debouncedQuery)
+  const recentSearches = useHistoryStore((s) => s.recentSearches)
+  const recentHotels = useHistoryStore((s) => s.recentHotels)
+
+  // Build history items for display
+  const historyItems = (() => {
+    if (!showHistory) return []
+    const items: { label: string; sublabel: string; type: 'search' | 'hotel'; value: string }[] = []
+    const seen = new Set<string>()
+
+    for (const s of recentSearches) {
+      if (!seen.has(s.destination)) {
+        seen.add(s.destination)
+        items.push({
+          label: s.destination,
+          sublabel: 'Pesquisa recente',
+          type: 'search',
+          value: s.destination,
+        })
+      }
+    }
+    for (const h of recentHotels) {
+      if (!seen.has(h.destination)) {
+        seen.add(h.destination)
+        items.push({
+          label: h.destination,
+          sublabel: `Hotel: ${h.name}`,
+          type: 'hotel',
+          value: h.destination,
+        })
+      }
+    }
+    return items.slice(0, 5)
+  })()
 
   // Debounce input
   const handleInputChange = useCallback(
@@ -41,6 +76,7 @@ export function DestinationAutocomplete({
       setInputValue(val)
       onChange('')
       setActiveIndex(-1)
+      setShowHistory(false)
 
       if (timerRef.current) clearTimeout(timerRef.current)
 
@@ -65,6 +101,7 @@ export function DestinationAutocomplete({
         !wrapperRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false)
+        setShowHistory(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -163,7 +200,11 @@ export function DestinationAutocomplete({
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => {
-            if (suggestions?.length && inputValue.length >= 2) setIsOpen(true)
+            if (suggestions?.length && inputValue.length >= 2) {
+              setIsOpen(true)
+            } else if (inputValue.length < 2 && (recentSearches.length > 0 || recentHotels.length > 0)) {
+              setShowHistory(true)
+            }
           }}
           onKeyDown={handleKeyDown}
           className={cn(
@@ -237,6 +278,49 @@ export function DestinationAutocomplete({
           Nenhum destino encontrado
         </div>
       )}
+
+      {/* History dropdown when input is empty */}
+      {showHistory && !isOpen && historyItems.length > 0 && (
+        <ul
+          className="absolute top-full left-0 right-0 z-20 mt-1 max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg"
+        >
+          <li className="px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">
+            Recentes
+          </li>
+          {historyItems.map((item, index) => (
+            <li
+              key={`${item.type}-${index}`}
+              className="flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              onMouseDown={() => {
+                selectSuggestion(item.value)
+                setShowHistory(false)
+              }}
+            >
+              {item.type === 'search' ? <HistoryIcon /> : <HotelPinIcon />}
+              <div className="flex flex-col">
+                <span className="font-medium">{item.label}</span>
+                <span className="text-xs text-gray-400">{item.sublabel}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
+  )
+}
+
+function HistoryIcon() {
+  return (
+    <svg className="h-4 w-4 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+    </svg>
+  )
+}
+
+function HotelPinIcon() {
+  return (
+    <svg className="h-4 w-4 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.145c.182-.1.422-.242.707-.427.57-.37 1.318-.93 2.065-1.685C14.89 15.165 16.5 12.838 16.5 10c0-3.59-2.91-6.5-6.5-6.5S3.5 6.41 3.5 10c0 2.838 1.61 5.165 3.113 6.665a13.586 13.586 0 002.065 1.685 8.5 8.5 0 00.707.427 4.14 4.14 0 00.281.145l.018.008.006.003zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+    </svg>
   )
 }

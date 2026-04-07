@@ -31,6 +31,8 @@ export function ReviewStep({
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const checkIn = useBookingStore((s) => s.checkIn)
   const checkOut = useBookingStore((s) => s.checkOut)
+  const adults = useBookingStore((s) => s.adults)
+  const children = useBookingStore((s) => s.children)
   const [showTerms, setShowTerms] = useState(false)
 
   const nights =
@@ -75,6 +77,12 @@ export function ReviewStep({
             </span>
           </p>
         )}
+        <p className="text-sm text-gray-600">
+          <span className="font-medium text-gray-900">{adults} {adults === 1 ? 'adulto' : 'adultos'}</span>
+          {children > 0 && (
+            <span>, {children} {children === 1 ? 'criança' : 'crianças'}</span>
+          )}
+        </p>
         <ul className="space-y-1">
           {selectedRooms.map((room) => (
             <li key={room.id} className="flex justify-between text-sm">

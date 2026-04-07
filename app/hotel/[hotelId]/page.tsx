@@ -4,6 +4,7 @@ import { use, useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useHotel } from '@/hooks/queries/use-hotel'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
+import { useHistoryStore } from '@/stores/history-store'
 import { Breadcrumb } from '@/components/hotel/breadcrumb'
 import { HotelGallery } from '@/components/hotel/hotel-gallery'
 import { HotelInfo } from '@/components/hotel/hotel-info'
@@ -39,14 +40,6 @@ function useRoomUrlSync(hotelId: number, hotelRooms: { id: number; name: string;
       clearRooms()
     }
   }, [hotelId, selectedHotelId, clearRooms])
-
-  // Clear rooms on unmount (leaving hotel page)
-  useEffect(() => {
-    return () => {
-      clearRooms()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // Hydrate store from URL on mount
   useEffect(() => {
@@ -125,6 +118,20 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
   const missingParams = !checkIn || !checkOut
   const [modalDismissed, setModalDismissed] = useState(false)
   const showModal = missingParams && !modalDismissed
+  const addRecentHotel = useHistoryStore((s) => s.addRecentHotel)
+
+  // Track hotel view in history
+  useEffect(() => {
+    addRecentHotel({
+      id: hotel.id,
+      name: hotel.name,
+      destination: hotel.destination,
+      thumbnail: hotel.thumbnail,
+      queryString: searchParams.toString(),
+      visitedAt: new Date().toISOString(),
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hotel.id])
 
   // Sync rooms between URL ↔ store (isolated per hotel)
   useRoomUrlSync(
@@ -186,7 +193,7 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
         </div>
       </div>
 
-      <FeaturedHotels />
+      <FeaturedHotels recommended />
     </>
   )
 }

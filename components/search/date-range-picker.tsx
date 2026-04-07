@@ -97,7 +97,7 @@ export function DateRangePicker({
               if (checkOut && e.target.value >= checkOut) onCheckOutChange('')
             }}
             aria-label="Data de check-in"
-            className="sr-only"
+            className="absolute inset-0 cursor-pointer opacity-0"
           />
         </div>
 
@@ -117,7 +117,7 @@ export function DateRangePicker({
             checkIn ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-60'
           )}
           aria-label="Selecionar data de check-out"
-          aria-disabled={!checkIn}
+          aria-disabled={checkIn ? undefined : 'true'}
         >
           <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
             Check-out
@@ -137,7 +137,7 @@ export function DateRangePicker({
             disabled={!checkIn}
             onChange={(e) => onCheckOutChange(e.target.value)}
             aria-label="Data de check-out"
-            className="sr-only"
+            className="absolute inset-0 cursor-pointer opacity-0 disabled:cursor-not-allowed"
           />
         </div>
       </div>

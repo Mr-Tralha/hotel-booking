@@ -1,7 +1,8 @@
 'use client'
 
-import { useBookingStore } from '@/stores/booking-store'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import {
   AMENITY_LABELS,
   PROPERTY_TYPE_LABELS,
@@ -16,9 +17,14 @@ interface HotelInfoProps {
 }
 
 export function HotelInfo({ hotel }: HotelInfoProps) {
-  const dateCheckIn = useBookingStore((s) => s.checkIn)
-  const dateCheckOut = useBookingStore((s) => s.checkOut)
+  const searchParams = useSearchParams()
+  const dateCheckIn = searchParams.get('checkIn')
+  const dateCheckOut = searchParams.get('checkOut')
+  const adults = Number(searchParams.get('adults')) || 2
+  const children = Number(searchParams.get('children')) || 0
   const cancellation = CANCELLATION_LABELS[hotel.cancellationPolicy]
+  const [policyOpen, setPolicyOpen] = useState(false)
+  const totalGuests = adults + children
 
 
   return (
@@ -82,6 +88,18 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         </p>
       </div>
 
+      {/* Guest count */}
+      {totalGuests > 0 && (
+        <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2.5">
+          <GuestsInfoIcon />
+          <span className="text-sm font-medium text-blue-700">
+            {adults} {adults === 1 ? 'adulto' : 'adultos'}
+            {children > 0 &&
+              `, ${children} ${children === 1 ? 'criança' : 'crianças'}`}
+          </span>
+        </div>
+      )}
+
       {/* Check-in/Check-out */}
       <div className="flex items-stretch gap-0 rounded-lg border border-gray-200 overflow-hidden">
         <div className="flex-1 p-4">
@@ -106,15 +124,37 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         title="Comodidades do estabelecimento"
       />
 
-      {/* Cancellation policy */}
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <h3 className="text-sm font-semibold text-gray-900">Política de Cancelamento</h3>
-        <p className={`mt-1 text-sm font-medium ${cancellation.color}`}>
-          {cancellation.label}
-        </p>
-        <p className="mt-1 text-xs text-gray-500">
-          {CANCELLATION_DESCRIPTIONS[hotel.cancellationPolicy]}
-        </p>
+      {/* Cancellation policy — collapsible */}
+      <div className="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setPolicyOpen((v) => !v)}
+          className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
+          aria-expanded={policyOpen}
+        >
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Política de Cancelamento</h3>
+            <p className={`mt-0.5 text-sm font-medium ${cancellation.color}`}>
+              {cancellation.label}
+            </p>
+          </div>
+          <svg
+            className={cn('h-5 w-5 text-gray-400 transition-transform', policyOpen && 'rotate-180')}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+          </svg>
+        </button>
+        {policyOpen && (
+          <div className="border-t border-gray-200 px-4 pb-4 pt-2">
+            <p className="text-xs text-gray-500">
+              {CANCELLATION_DESCRIPTIONS[hotel.cancellationPolicy]}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Availability indicator */}
@@ -145,6 +185,15 @@ function PinIcon() {
     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z" />
       <circle cx="12" cy="10" r="3" />
+    </svg>
+  )
+}
+
+function GuestsInfoIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600" aria-hidden="true">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   )
 }

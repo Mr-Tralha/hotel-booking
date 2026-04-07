@@ -1,43 +1,28 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 
-interface ShareButtonProps {
-  hotelName: string
-}
+export function ShareButton({ hotelName }: { hotelName: string }) {
+  const [copied, setCopied] = useState(false)
 
-export function ShareButton({ hotelName }: ShareButtonProps) {
-  const handleShare = useCallback(async () => {
-    const url = window.location.href
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: hotelName, url })
-        return
-      } catch {
-        // User cancelled or not supported, fall through to clipboard
-      }
-    }
-
-    await navigator.clipboard.writeText(url)
-    // Simple feedback - could be replaced with a toast system later
-    const el = document.getElementById('share-feedback')
-    if (el) {
-      el.textContent = 'Link copiado!'
-      setTimeout(() => {
-        el.textContent = ''
-      }, 2000)
-    }
-  }, [hotelName])
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [])
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="secondary" size="sm" onClick={handleShare}>
+      <Button variant="secondary" size="sm" onClick={handleCopy}>
         <ShareIcon />
-        Compartilhar
+        {copied ? 'Copiado!' : 'Compartilhar'}
       </Button>
-      <span id="share-feedback" className="text-xs text-green-600" aria-live="polite" />
+      {copied && (
+        <span className="text-xs text-green-600" aria-live="polite">
+          Link copiado!
+        </span>
+      )}
     </div>
   )
 }
@@ -45,9 +30,8 @@ export function ShareButton({ hotelName }: ShareButtonProps) {
 function ShareIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
     </svg>
   )
 }

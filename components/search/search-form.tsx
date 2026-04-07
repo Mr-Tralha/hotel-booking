@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { searchSchema, type SearchFormData } from '@/lib/validations/search'
 import { useBookingStore } from '@/stores/booking-store'
+import { useHistoryStore } from '@/stores/history-store'
 import { cn } from '@/lib/utils'
 import { DestinationAutocomplete } from './destination-autocomplete'
 import { DateRangePicker } from './date-range-picker'
@@ -48,6 +49,7 @@ interface SearchFormProps {
 export function SearchForm({ defaultValues }: SearchFormProps) {
   const router = useRouter()
   const setSearchParams = useBookingStore((s) => s.setSearchParams)
+  const addRecentSearch = useHistoryStore((s) => s.addRecentSearch)
   const [showFilters, setShowFilters] = useState(
     !!(defaultValues?.priceMin || defaultValues?.priceMax || defaultValues?.ratingMin || defaultValues?.propertyType)
   )
@@ -96,6 +98,25 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
     if (ratingMin) params.set('ratingMin', ratingMin)
     if (propertyType) params.set('propertyType', propertyType)
     if (sort) params.set('sort', sort)
+
+    // Save search to history
+    const filterParts: string[] = []
+    if (priceMin) filterParts.push(`priceMin=${priceMin}`)
+    if (priceMax) filterParts.push(`priceMax=${priceMax}`)
+    if (ratingMin) filterParts.push(`ratingMin=${ratingMin}`)
+    if (propertyType) filterParts.push(`propertyType=${propertyType}`)
+    if (sort) filterParts.push(`sort=${sort}`)
+
+    addRecentSearch({
+      destination: data.destination,
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      adults: data.adults,
+      children: data.children,
+      rooms: data.rooms,
+      filters: filterParts.join('&'),
+      searchedAt: new Date().toISOString(),
+    })
 
     router.push(`/search?${params.toString()}`)
   }

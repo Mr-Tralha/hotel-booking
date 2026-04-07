@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { RoomCard } from '@/components/room/room-card'
 import { RoomDetailModal } from '@/components/room/room-detail-modal'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
@@ -15,6 +16,10 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
   const [modalRoom, setModalRoom] = useState<Room | null>(null)
   const [lightboxImages, setLightboxImages] = useState<string[] | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const searchParams = useSearchParams()
+  const adults = Number(searchParams.get('adults')) || 2
+  const children = Number(searchParams.get('children')) || 0
+  const totalGuests = adults + children
 
   return (
     <section id="quartos">
@@ -27,6 +32,7 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
             key={room.id}
             room={room}
             hotelId={hotel.id}
+            totalGuests={totalGuests}
             onOpenModal={() => setModalRoom(room)}
             onOpenLightbox={(images, index) => {
               setLightboxImages(images)

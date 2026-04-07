@@ -11,14 +11,16 @@ import type { Room } from '@/types/mock-db'
 interface RoomCardProps {
   room: Room
   hotelId: number
+  totalGuests?: number
   onOpenModal: () => void
   onOpenLightbox: (images: string[], index: number) => void
 }
 
-export function RoomCard({ room, hotelId, onOpenModal, onOpenLightbox }: RoomCardProps) {
+export function RoomCard({ room, hotelId, totalGuests = 0, onOpenModal, onOpenLightbox }: RoomCardProps) {
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const toggleRoom = useBookingStore((s) => s.toggleRoom)
   const isSelected = selectedRooms.some((r) => r.id === room.id)
+  const exceedsCapacity = totalGuests > 0 && totalGuests > room.maxGuests
 
   function handleToggle(e: React.MouseEvent) {
     e.stopPropagation()
@@ -44,10 +46,12 @@ export function RoomCard({ room, hotelId, onOpenModal, onOpenLightbox }: RoomCar
         }
       }}
       className={cn(
-        'flex flex-col overflow-hidden rounded-xl border shadow-sm transition-colors cursor-pointer sm:flex-row',
-        isSelected
-          ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500'
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+        'flex flex-col overflow-hidden rounded-xl border shadow-sm transition-colors sm:flex-row',
+        exceedsCapacity
+          ? 'border-gray-200 bg-gray-50 opacity-70 cursor-default'
+          : isSelected
+            ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500 cursor-pointer'
+            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md cursor-pointer'
       )}
     >
       {/* Room image */}
@@ -60,7 +64,7 @@ export function RoomCard({ room, hotelId, onOpenModal, onOpenLightbox }: RoomCar
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <div className="flex-1 space-y-2">
-            <RoomHeader room={room} bedsDescription={bedsDescription} />
+            <RoomHeader room={room} bedsDescription={bedsDescription} exceedsCapacity={exceedsCapacity} totalGuests={totalGuests} />
             <RoomAmenities amenities={room.amenities} />
           </div>
 
@@ -70,6 +74,7 @@ export function RoomCard({ room, hotelId, onOpenModal, onOpenLightbox }: RoomCar
             available={room.available}
             isSelected={isSelected}
             onToggle={handleToggle}
+            disabled={exceedsCapacity}
           />
         </div>
       </div>
@@ -122,7 +127,7 @@ function RoomImage({
   )
 }
 
-function RoomHeader({ room, bedsDescription }: { room: Room; bedsDescription: string }) {
+function RoomHeader({ room, bedsDescription, exceedsCapacity, totalGuests }: { room: Room; bedsDescription: string; exceedsCapacity: boolean; totalGuests: number }) {
   return (
     <>
       <h3 className="text-lg font-semibold text-gray-900">{room.name}</h3>
@@ -136,11 +141,16 @@ function RoomHeader({ room, bedsDescription }: { room: Room; bedsDescription: st
           <BedIcon />
           {bedsDescription}
         </span>
-        <span className="flex items-center gap-1">
+        <span className={cn('flex items-center gap-1', exceedsCapacity && 'text-red-600 font-medium')}>
           <GuestsIcon />
           Até {room.maxGuests} hóspedes
         </span>
       </div>
+      {exceedsCapacity && (
+        <p className="text-xs font-medium text-red-600">
+          Capacidade insuficiente para {totalGuests} hóspedes
+        </p>
+      )}
     </>
   )
 }
@@ -174,11 +184,13 @@ function RoomPrice({
   available,
   isSelected,
   onToggle,
+  disabled,
 }: {
   pricePerNight: number
   available: number
   isSelected: boolean
   onToggle: (e: React.MouseEvent) => void
+  disabled?: boolean
 }) {
   return (
     <div className="flex flex-row items-end justify-between gap-3 border-t border-gray-100 pt-3 sm:flex-col sm:items-end sm:border-t-0 sm:pt-0 sm:pl-4">
@@ -191,7 +203,7 @@ function RoomPrice({
 
       <Button
         onClick={onToggle}
-        disabled={available === 0}
+        disabled={available === 0 || disabled}
         variant={isSelected ? 'secondary' : 'primary'}
         size="md"
         className={

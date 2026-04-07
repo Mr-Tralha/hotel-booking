@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface PaginationProps {
   page: number
@@ -10,6 +11,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ page, total, limit, onPageChange }: PaginationProps) {
+  const t = useTranslations('pagination')
   const totalPages = Math.ceil(total / limit)
 
   if (totalPages <= 1) return null
@@ -23,12 +25,12 @@ export function Pagination({ page, total, limit, onPageChange }: PaginationProps
   }
 
   return (
-    <nav aria-label="Paginação" className="flex items-center justify-center gap-1">
+    <nav aria-label={t('navigation')} className="flex items-center justify-center gap-1">
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        aria-label="Página anterior"
+        aria-label={t('previous')}
         className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-40"
       >
         <ChevronLeftIcon />
@@ -64,7 +66,7 @@ export function Pagination({ page, total, limit, onPageChange }: PaginationProps
         type="button"
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        aria-label="Próxima página"
+        aria-label={t('next')}
         className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-40"
       >
         <ChevronRightIcon />

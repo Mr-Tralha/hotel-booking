@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface GuestSelectorProps {
   adults: number
-  children: number
+  childGuests: number
   rooms: number
   onAdultsChange: (value: number) => void
   onChildrenChange: (value: number) => void
@@ -19,6 +20,8 @@ function Counter({
   min,
   max,
   onChange,
+  decreaseAriaLabel,
+  increaseAriaLabel,
 }: {
   label: string
   subtitle?: string
@@ -26,6 +29,8 @@ function Counter({
   min: number
   max: number
   onChange: (value: number) => void
+  decreaseAriaLabel: string
+  increaseAriaLabel: string
 }) {
   return (
     <div className="flex items-center justify-between py-2">
@@ -40,7 +45,7 @@ function Counter({
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
-          aria-label={`Diminuir ${label.toLowerCase()}`}
+          aria-label={decreaseAriaLabel}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition-colors hover:border-gray-400 hover:bg-gray-50 disabled:border-gray-200 disabled:text-gray-300 disabled:hover:bg-transparent"
         >
           <svg
@@ -60,7 +65,7 @@ function Counter({
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          aria-label={`Aumentar ${label.toLowerCase()}`}
+          aria-label={increaseAriaLabel}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition-colors hover:border-gray-400 hover:bg-gray-50 disabled:border-gray-200 disabled:text-gray-300 disabled:hover:bg-transparent"
         >
           <svg
@@ -80,7 +85,7 @@ function Counter({
 
 export function GuestSelector({
   adults,
-  children: childrenCount,
+  childGuests,
   rooms,
   onAdultsChange,
   onChildrenChange,
@@ -88,6 +93,8 @@ export function GuestSelector({
 }: GuestSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('search')
+  const tc = useTranslations('common')
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -102,17 +109,17 @@ export function GuestSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const totalGuests = adults + childrenCount
+  const totalGuests = adults + childGuests
 
   const summary = [
-    `${totalGuests} hóspede${totalGuests !== 1 ? 's' : ''}`,
-    `${rooms} quarto${rooms !== 1 ? 's' : ''}`,
+    tc('guestCount', { count: totalGuests }),
+    tc('roomCount', { count: rooms }),
   ].join(', ')
 
   return (
     <div ref={wrapperRef} className="relative flex flex-col gap-1">
       <label className="text-sm font-medium text-gray-700">
-        Hóspedes e Quartos
+        {t('guestsAndRooms')}
       </label>
       <button
         type="button"
@@ -153,28 +160,34 @@ export function GuestSelector({
       {isOpen && (
         <div className="absolute top-full left-0 right-0 z-20 mt-1 rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
           <Counter
-            label="Adultos"
+            label={t('adults')}
             value={adults}
             min={1}
             max={10}
             onChange={onAdultsChange}
+            decreaseAriaLabel={t('decreaseLabel', { label: t('adults') })}
+            increaseAriaLabel={t('increaseLabel', { label: t('adults') })}
           />
           <div className="border-t border-gray-100" />
           <Counter
-            label="Crianças"
-            subtitle="0 a 12 anos"
-            value={childrenCount}
+            label={t('children')}
+            subtitle={t('childrenAge')}
+            value={childGuests}
             min={0}
             max={6}
             onChange={onChildrenChange}
+            decreaseAriaLabel={t('decreaseLabel', { label: t('children') })}
+            increaseAriaLabel={t('increaseLabel', { label: t('children') })}
           />
           <div className="border-t border-gray-100" />
           <Counter
-            label="Quartos"
+            label={t('rooms')}
             value={rooms}
             min={1}
             max={5}
             onChange={onRoomsChange}
+            decreaseAriaLabel={t('decreaseLabel', { label: t('rooms') })}
+            increaseAriaLabel={t('increaseLabel', { label: t('rooms') })}
           />
         </div>
       )}

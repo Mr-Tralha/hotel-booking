@@ -2,13 +2,13 @@
 
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
-import { ROOM_AMENITY_LABELS, BED_TYPE_LABELS } from '@/lib/labels'
 import { useBookingStore } from '@/stores/booking-store'
 import { BaseModal } from '@/components/ui/base-modal'
 import { AmenitiesDropdown } from '@/components/ui/amenities-dropdown'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Room } from '@/types/mock-db'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 interface RoomDetailModalProps {
   room: Room
@@ -26,6 +26,10 @@ export function RoomDetailModal({
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const toggleRoom = useBookingStore((s) => s.toggleRoom)
   const isSelected = selectedRooms.some((r) => r.id === room.id)
+  const t = useTranslations('hotel')
+  const tc = useTranslations('common')
+  const tl = useTranslations('labels')
+  const locale = useLocale()
 
   function handleToggle() {
     toggleRoom(
@@ -35,7 +39,7 @@ export function RoomDetailModal({
   }
 
   const bedsDescription = room.beds
-    .map((b) => `${b.quantity} ${BED_TYPE_LABELS[b.type]}`)
+    .map((b) => `${b.quantity} ${tl('bedType.' + b.type)}`)
     .join(' + ')
 
   return (
@@ -43,7 +47,7 @@ export function RoomDetailModal({
       isOpen
       onClose={onClose}
       closeOnBackdropClick
-      ariaLabel={`Detalhes do quarto: ${room.name}`}
+      ariaLabel={`${t('selectRoomFull')}: ${room.name}`}
     >
       <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl">
         {/* Close button */}
@@ -51,7 +55,7 @@ export function RoomDetailModal({
           type="button"
           onClick={onClose}
           className="absolute right-3 top-3 z-10 rounded-full bg-white/90 p-1.5 text-gray-500 shadow-sm hover:bg-gray-100 transition-colors"
-          aria-label="Fechar"
+          aria-label={tc('close')}
         >
           <CloseIcon />
         </button>
@@ -91,8 +95,8 @@ export function RoomDetailModal({
             {room.available <= 3 && room.available > 0 && (
               <span className="absolute left-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
                 {room.available === 1
-                  ? 'Último disponível!'
-                  : `Apenas ${room.available} disponíveis!`}
+                  ? t('lastAvailable')
+                  : t('onlyAvailable', { count: room.available })}
               </span>
             )}
           </div>
@@ -105,37 +109,37 @@ export function RoomDetailModal({
             <div>
               <h2 className="text-xl font-bold text-gray-900">{room.name}</h2>
               <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
-                <span className="flex items-center gap-1"><AreaIcon />{room.size} m²</span>
+                <span className="flex items-center gap-1"><AreaIcon />{t('squareMeters', { size: room.size })}</span>
                 <span className="flex items-center gap-1"><BedIcon />{bedsDescription}</span>
-                <span className="flex items-center gap-1"><GuestsIcon />Até {room.maxGuests} hóspedes</span>
+                <span className="flex items-center gap-1"><GuestsIcon />{t('maxGuests', { count: room.maxGuests })}</span>
               </div>
             </div>
             <div className="flex items-baseline gap-1 flex-shrink-0">
-              <span className="text-2xl font-bold text-gray-900">{formatCurrency(room.pricePerNight)}</span>
-              <span className="text-sm text-gray-500">/noite</span>
+              <span className="text-2xl font-bold text-gray-900">{formatCurrency(room.pricePerNight, locale)}</span>
+              <span className="text-sm text-gray-500">{tc('perNight')}</span>
             </div>
           </div>
 
           {/* Full description */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Descrição</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('description')}</h3>
             <p className="mt-1 text-sm leading-relaxed text-gray-600">{room.description}</p>
           </div>
 
           {/* Room amenities — collapsible dropdown matching hotel style */}
           <AmenitiesDropdown
             amenities={room.amenities}
-            labels={ROOM_AMENITY_LABELS}
-            title="Comodidades do quarto"
+            labelPrefix="roomAmenity"
+            title={t('roomAmenities')}
           />
 
           {/* Beds detail */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Camas</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('beds')}</h3>
             <div className="mt-2 flex flex-wrap gap-2">
               {room.beds.map((bed, i) => (
                 <span key={i} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
-                  {bed.quantity}× {BED_TYPE_LABELS[bed.type]}
+                  {bed.quantity}× {tl('bedType.' + bed.type)}
                 </span>
               ))}
             </div>
@@ -151,13 +155,13 @@ export function RoomDetailModal({
               className={cn('flex-1', isSelected && 'border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100')}
             >
               {room.available === 0
-                ? 'Indisponível'
+                ? t('unavailable')
                 : isSelected
-                  ? '✓ Selecionado'
-                  : 'Selecionar quarto'}
+                  ? t('selectedRoom')
+                  : t('selectRoomFull')}
             </Button>
             <Button variant="secondary" size="md" onClick={onClose}>
-              Fechar
+              {tc('close')}
             </Button>
           </div>
         </div>

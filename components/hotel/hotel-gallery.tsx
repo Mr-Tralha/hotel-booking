@@ -1,8 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useState, useCallback } from 'react'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
+import { useTranslations } from '@/lib/i18n'
+
+const ImageLightbox = dynamic(
+  () => import('@/components/ui/image-lightbox').then((m) => m.ImageLightbox),
+  { ssr: false }
+)
 
 
 interface HotelGalleryProps {
@@ -12,6 +18,7 @@ interface HotelGalleryProps {
 }
 
 export function HotelGallery({ images, hotelName, availableRooms }: HotelGalleryProps) {
+  const t = useTranslations('hotel')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -34,7 +41,7 @@ export function HotelGallery({ images, hotelName, availableRooms }: HotelGallery
         >
           <Image
             src={images[0]}
-            alt={`${hotelName} — foto principal`}
+            alt={t('mainPhoto', { name: hotelName })}
             fill
             sizes="(max-width: 640px) 100vw, 50vw"
             className="object-cover transition-transform duration-300 hover:scale-105 cursor-pointer"
@@ -43,8 +50,8 @@ export function HotelGallery({ images, hotelName, availableRooms }: HotelGallery
           {availableRooms !== undefined && availableRooms <= 3 && (
             <span className="absolute right-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm pointer-events-none">
               {availableRooms === 1
-                ? 'Último quarto!'
-                : `Apenas ${availableRooms} disponíveis!`}
+                ? t('lastRoom')
+                : t('onlyAvailable', { count: availableRooms })}
             </span>
           )}
 
@@ -83,7 +90,7 @@ export function HotelGallery({ images, hotelName, availableRooms }: HotelGallery
                 </span>
               </div>
 
-              <span>Fotos</span>
+              <span>{t('photos')}</span>
             </button>
           )}
         </button>
@@ -98,7 +105,7 @@ export function HotelGallery({ images, hotelName, availableRooms }: HotelGallery
           >
             <Image
               src={src}
-              alt={`${hotelName} — foto ${i + 2}`}
+              alt={t('photoN', { name: hotelName, n: i + 2 })}
               fill
               sizes="25vw"
               className="object-cover transition-transform duration-300 hover:scale-105"
@@ -106,7 +113,7 @@ export function HotelGallery({ images, hotelName, availableRooms }: HotelGallery
             {/* "Show all" overlay on last visible image */}
             {i === 3 && images.length > 5 && (
               <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-sm font-semibold text-white">
-                +{images.length - 5} fotos
+                {t('photoCount', { count: images.length - 5 })}
               </span>
             )}
           </button>

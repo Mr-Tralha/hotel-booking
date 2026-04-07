@@ -42,7 +42,24 @@ export function HotelDetailSkeleton() {
 
         {/* Sidebar skeleton */}
         <div className="space-y-4">
-          <div className="h-48 animate-pulse rounded-xl bg-gray-200" />
+          <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+            {/* Rating + share */}
+            <div className="flex items-center justify-between">
+              <div className="h-6 w-24 animate-pulse rounded bg-gray-200" />
+              <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+            </div>
+            {/* Price */}
+            <div className="space-y-2">
+              <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+              <div className="h-8 w-40 animate-pulse rounded bg-gray-200" />
+            </div>
+            {/* Date range */}
+            <div className="h-12 w-full animate-pulse rounded-md bg-gray-200" />
+            {/* Guests */}
+            <div className="h-5 w-36 animate-pulse rounded bg-gray-200" />
+            {/* Button */}
+            <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+          </div>
         </div>
       </div>
 

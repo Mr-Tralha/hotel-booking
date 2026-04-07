@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, type ReactNode } from 'react'
+import { useTranslations } from '@/lib/i18n'
 
 interface CarouselProps {
   children: ReactNode
@@ -23,12 +24,17 @@ interface CarouselProps {
  * override the child's width externally if needed.
  */
 export function Carousel({ children, title, className = '' }: CarouselProps) {
+  const t = useTranslations('hotel')
   const scrollRef = useRef<HTMLDivElement>(null)
 
   function scroll(direction: 'left' | 'right') {
     const container = scrollRef.current
     if (!container) return
-    const cardWidth = container.firstElementChild?.getBoundingClientRect().width ?? 300
+    // Use scrollWidth-based calculation to avoid getBoundingClientRect forced reflow
+    const childCount = container.children.length
+    const cardWidth = childCount > 0
+      ? (container.scrollWidth - (childCount - 1) * 16) / childCount
+      : 300
     const distance = direction === 'left' ? -(cardWidth + 16) : cardWidth + 16
     container.scrollBy({ left: distance, behavior: 'smooth' })
   }
@@ -40,8 +46,8 @@ export function Carousel({ children, title, className = '' }: CarouselProps) {
         <div className="flex items-center justify-between">
           <div>{title}</div>
           <div className="hidden sm:flex items-center gap-1">
-            <CarouselArrow direction="left" onClick={() => scroll('left')} />
-            <CarouselArrow direction="right" onClick={() => scroll('right')} />
+            <CarouselArrow direction="left" onClick={() => scroll('left')} label={t('previousSlide')} />
+            <CarouselArrow direction="right" onClick={() => scroll('right')} label={t('nextSlide')} />
           </div>
         </div>
       )}
@@ -49,8 +55,8 @@ export function Carousel({ children, title, className = '' }: CarouselProps) {
       {/* When no title, still render arrows aligned to the right */}
       {title === undefined && (
         <div className="hidden sm:flex justify-end gap-1 mb-2">
-          <CarouselArrow direction="left" onClick={() => scroll('left')} />
-          <CarouselArrow direction="right" onClick={() => scroll('right')} />
+          <CarouselArrow direction="left" onClick={() => scroll('left')} label={t('previousSlide')} />
+          <CarouselArrow direction="right" onClick={() => scroll('right')} label={t('nextSlide')} />
         </div>
       )}
 
@@ -103,16 +109,18 @@ export function CarouselItem({
 function CarouselArrow({
   direction,
   onClick,
+  label,
 }: {
   direction: 'left' | 'right'
   onClick: () => void
+  label: string
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className="rounded-full border border-gray-200 bg-white p-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors cursor-pointer"
-      aria-label={direction === 'left' ? 'Anterior' : 'Próximo'}
+      aria-label={label}
     >
       {direction === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
     </button>

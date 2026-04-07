@@ -6,5 +6,6 @@ export function useHotel(id: number) {
     queryKey: ['hotel', id],
     queryFn: () => fetchHotelById(id),
     enabled: id > 0,
+    gcTime: 10 * 60 * 1000, // keep hotel data 10 min for back navigation
   })
 }

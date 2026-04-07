@@ -4,11 +4,15 @@ import { useRouter } from 'next/navigation'
 import { useHistoryStore, type RecentSearch } from '@/stores/history-store'
 import { HotelCard } from '@/components/hotels/hotel-card'
 import { formatDate } from '@/lib/utils'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 export function RecentSearches() {
   const router = useRouter()
   const recentSearches = useHistoryStore((s) => s.recentSearches)
   const recentHotels = useHistoryStore((s) => s.recentHotels)
+  const t = useTranslations('search')
+  const tc = useTranslations('common')
+  const locale = useLocale()
 
   if (recentSearches.length === 0 && recentHotels.length === 0) return null
 
@@ -40,9 +44,9 @@ export function RecentSearches() {
         <div>
           <div className="mb-4">
             <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-              {showSubtitles ? 'Pesquisas recentes' : 'Últimas pesquisas'}
+              {showSubtitles ? t('recentSearches') : t('lastSearches')}
             </h2>
-            <p className="mt-1 text-sm text-gray-500">Retome de onde parou</p>
+            <p className="mt-1 text-sm text-gray-500">{t('recentSearchSubtitle')}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -61,12 +65,12 @@ export function RecentSearches() {
                     {search.destination}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5 leading-snug">
-                    {formatDate(new Date(search.checkIn))} → {formatDate(new Date(search.checkOut))}
+                    {formatDate(new Date(search.checkIn), locale)} → {formatDate(new Date(search.checkOut), locale)}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {search.adults} {search.adults === 1 ? 'adulto' : 'adultos'}
-                    {search.children > 0 && `, ${search.children} crianças`}
-                    {' · '}{search.rooms} {search.rooms === 1 ? 'quarto' : 'quartos'}
+                    {tc('adultCount', { count: search.adults })}
+                    {search.children > 0 && `, ${tc('childCount', { count: search.children })}`}
+                    {' · '}{tc('roomCount', { count: search.rooms })}
                   </p>
                 </div>
                 <ArrowIcon />

@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from '@/lib/i18n'
 
 interface BreadcrumbProps {
   hotelName: string
@@ -6,12 +9,13 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ hotelName, destination }: BreadcrumbProps) {
+  const t = useTranslations('hotel')
   return (
-    <nav aria-label="Navegação" className="mb-4">
+    <nav aria-label={t('sectionNavigation')} className="mb-4">
       <ol className="flex flex-wrap items-center gap-1 text-sm text-gray-500">
         <li>
           <Link href="/" className="hover:text-blue-600 transition-colors">
-            Início
+            {t('breadcrumbHome')}
           </Link>
         </li>
         <li aria-hidden="true">

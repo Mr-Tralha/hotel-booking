@@ -1,34 +1,41 @@
 'use client'
 
 import { useHotels } from '@/hooks/queries/use-hotels'
+import { useTranslations } from '@/lib/i18n'
 import { HotelList } from './hotel-list'
+import type { Hotel, PaginatedResponse } from '@/types/mock-db'
 
 interface FeaturedHotelsProps {
   recommended?: boolean
+  initialData?: PaginatedResponse<Hotel>
 }
 
-export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
+export function FeaturedHotels({ recommended, initialData }: FeaturedHotelsProps) {
+  const t = useTranslations('featured')
   const variant = recommended ? 'recommended' : 'featured'
 
   const config = {
     featured: {
-      title: 'Hotéis em destaque',
-      description: 'Selecionados pela qualidade e avaliações dos hóspedes',
+      title: t('title'),
+      description: t('description'),
       py: 'py-12 sm:py-16',
     },
     recommended: {
-      title: 'Recomendados para você',
-      description: 'Baseado nas suas preferências e tendências',
+      title: t('recommendedTitle'),
+      description: t('recommendedDescription'),
       py: 'py-6 sm:py-8',
     },
   }[variant]
 
-  const { data, isLoading } = useHotels({
-    featured: true,
-    _sort: 'rating',
-    _order: 'desc',
-    _limit: 6,
-  })
+  const { data, isLoading } = useHotels(
+    {
+      featured: true,
+      _sort: 'rating',
+      _order: 'desc',
+      _limit: 6,
+    },
+    { initialData },
+  )
 
   return (
     <section className={`mx-auto w-full max-w-6xl px-4 ${config.py}`}>
@@ -45,7 +52,8 @@ export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
         hotels={data?.data}
         isLoading={isLoading}
         skeletonCount={6}
-        emptyMessage="Nenhum hotel disponível no momento."
+        emptyMessage={t('noHotels')}
+        priorityCount={3}
       />
     </section>
   )

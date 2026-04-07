@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { AMENITY_LABELS } from '@/lib/labels'
+import { useTranslations } from '@/lib/i18n'
 import type { Amenity } from '@/types/mock-db'
 
 interface SearchFiltersProps {
@@ -15,25 +15,7 @@ interface SearchFiltersProps {
   onFilterChange: (updates: Record<string, string | undefined>) => void
 }
 
-const PROPERTY_TYPES = [
-  { value: 'hotel', label: 'Hotel' },
-  { value: 'pousada', label: 'Pousada' },
-  { value: 'resort', label: 'Resort' },
-]
-
-const RATING_OPTIONS = [
-  { value: '', label: 'Qualquer' },
-  { value: '3', label: '3+ estrelas' },
-  { value: '4', label: '4+ estrelas' },
-  { value: '4.5', label: '4.5+ estrelas' },
-]
-
-const SORT_OPTIONS = [
-  { value: '', label: 'Relevância' },
-  { value: 'price_asc', label: 'Menor preço' },
-  { value: 'rating_desc', label: 'Melhor avaliação' },
-  { value: 'popular', label: 'Mais popular' },
-]
+const PROPERTY_TYPE_VALUES = ['hotel', 'pousada', 'resort'] as const
 
 const FILTER_AMENITIES: Amenity[] = [
   'wifi', 'pool', 'parking', 'gym', 'restaurant', 'spa',
@@ -53,6 +35,8 @@ export function SearchFilters({
   sort,
   onFilterChange,
 }: SearchFiltersProps) {
+  const t = useTranslations('search')
+  const tl = useTranslations('labels')
   const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType || amenities)
 
   const minVal = priceMin ? Number(priceMin) : PRICE_MIN
@@ -81,7 +65,7 @@ export function SearchFilters({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">Filtros</h3>
+        <h3 className="text-sm font-semibold text-gray-900">{t('filters')}</h3>
         {hasActiveFilters && (
           <button
             type="button"
@@ -96,7 +80,7 @@ export function SearchFilters({
             }
             className="text-xs font-medium text-blue-600 hover:text-blue-700"
           >
-            Limpar filtros
+            {t('clearFilters')}
           </button>
         )}
       </div>
@@ -104,7 +88,7 @@ export function SearchFilters({
       {/* Price range slider */}
       <fieldset className="flex flex-col gap-3">
         <legend className="text-sm font-medium text-gray-700">
-          Preço por noite
+          {t('pricePerNight')}
         </legend>
         <div className="flex items-center justify-between text-sm text-gray-900 font-medium">
           <span>R$ {minVal}</span>
@@ -135,7 +119,7 @@ export function SearchFilters({
               }
             }}
             className="pointer-events-none absolute inset-x-0 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
-            aria-label="Preço mínimo"
+            aria-label={t('minPrice')}
           />
           {/* Max thumb */}
           <input
@@ -151,7 +135,7 @@ export function SearchFilters({
               }
             }}
             className="pointer-events-none absolute inset-x-0 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
-            aria-label="Preço máximo"
+            aria-label={t('maxPrice')}
           />
         </div>
       </fieldset>
@@ -159,10 +143,15 @@ export function SearchFilters({
       {/* Avaliação mínima */}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium text-gray-700">
-          Avaliação mínima
+          {t('minimumRating')}
         </legend>
         <div className="flex flex-wrap gap-1.5">
-          {RATING_OPTIONS.map((opt) => (
+          {[
+            { value: '', label: t('ratingAny') },
+            { value: '3', label: t('ratingStars3') },
+            { value: '4', label: t('ratingStars4') },
+            { value: '4.5', label: t('ratingStars45') },
+          ].map((opt) => (
             <Button
               key={opt.value}
               type="button"
@@ -179,14 +168,14 @@ export function SearchFilters({
       {/* Property type — multi-select */}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium text-gray-700">
-          Tipo de propriedade
+          {t('propertyType')}
         </legend>
         <div className="flex flex-col gap-1.5">
-          {PROPERTY_TYPES.map((opt) => {
-            const checked = selectedTypes.includes(opt.value)
+          {PROPERTY_TYPE_VALUES.map((val) => {
+            const checked = selectedTypes.includes(val)
             return (
               <label
-                key={opt.value}
+                key={val}
                 className={cn(
                   'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors border',
                   checked
@@ -207,10 +196,10 @@ export function SearchFilters({
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={() => togglePropertyType(opt.value)}
+                  onChange={() => togglePropertyType(val)}
                   className="sr-only"
                 />
-                {opt.label}
+                {tl('propertyType.' + val)}
               </label>
             )
           })}
@@ -220,7 +209,7 @@ export function SearchFilters({
       {/* Comodidades — multi-select */}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium text-gray-700">
-          Comodidades
+          {t('amenities')}
         </legend>
         <div className="flex flex-col gap-1.5">
           {FILTER_AMENITIES.map((amenity) => {
@@ -253,7 +242,7 @@ export function SearchFilters({
                   onChange={() => toggleAmenity(amenity)}
                   className="sr-only"
                 />
-                {AMENITY_LABELS[amenity]}
+                {tl('amenity.' + amenity)}
               </label>
             )
           })}
@@ -263,10 +252,15 @@ export function SearchFilters({
       {/* Ordenação */}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium text-gray-700">
-          Ordenar por
+          {t('sortBy')}
         </legend>
         <div className="flex flex-col gap-1.5">
-          {SORT_OPTIONS.map((opt) => (
+          {[
+            { value: '', label: t('sortRelevance') },
+            { value: 'price_asc', label: t('sortLowestPrice') },
+            { value: 'rating_desc', label: t('sortBestRating') },
+            { value: 'popular', label: t('sortMostPopular') },
+          ].map((opt) => (
             <button
               key={opt.value}
               type="button"

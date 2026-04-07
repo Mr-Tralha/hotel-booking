@@ -1,22 +1,26 @@
 'use client'
 
+import { useTranslations } from '@/lib/i18n'
+
 interface SortSelectorProps {
   value: string
   onChange: (value: string) => void
 }
 
-const SORT_OPTIONS = [
-  { value: '', label: 'Relevância' },
-  { value: 'price_asc', label: 'Menor preço' },
-  { value: 'price_desc', label: 'Maior preço' },
-  { value: 'rating_desc', label: 'Melhor avaliação' },
-]
-
 export function SortSelector({ value, onChange }: SortSelectorProps) {
+  const t = useTranslations('search')
+
+  const SORT_OPTIONS = [
+    { value: '', label: t('sortRelevance') },
+    { value: 'price_asc', label: t('sortLowestPrice') },
+    { value: 'price_desc', label: t('sortHighestPrice') },
+    { value: 'rating_desc', label: t('sortBestRating') },
+  ]
+
   return (
     <div className="flex items-center gap-2">
       <label htmlFor="sort" className="text-sm text-gray-600 whitespace-nowrap">
-        Ordenar por:
+        {t('sortBy')}:
       </label>
       <select
         id="sort"

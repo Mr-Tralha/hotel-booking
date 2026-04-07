@@ -1,15 +1,18 @@
 'use client'
 
 import { Suspense } from 'react'
+import { useTranslations } from '@/lib/i18n'
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { SearchForm } from '@/components/search/search-form'
-import { SearchFilters } from '@/components/search/search-filters'
 import { HotelList } from '@/components/hotels/hotel-list'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 import { Pagination } from '@/components/ui/pagination'
 
 function SearchResults() {
+  const t = useTranslations('search')
+  const tc = useTranslations('common')
+
   const {
     destination,
     checkIn,
@@ -55,9 +58,12 @@ function SearchResults() {
           onAfterSubmit={() => {
             const el = document.getElementById('hotel-results')
             if (!el) return
-            const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
-            const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
-            window.scrollTo({ top, behavior: 'smooth' })
+            // Defer layout read to next frame to avoid forced reflow during submit
+            requestAnimationFrame(() => {
+              const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
+              const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+              window.scrollTo({ top, behavior: 'smooth' })
+            })
           }}
         />
       </div>
@@ -70,12 +76,12 @@ function SearchResults() {
           <div className="mb-4">
             <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
               {destination
-                ? `Hotéis em ${destination}`
-                : 'Resultados da busca'}
+                ? t('hotelsIn', { destination })
+                : t('searchResults')}
             </h1>
             {data && (
               <p className="mt-0.5 text-sm text-gray-500">
-                {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
+                {isLoading ? tc('loading') : total === 0 ? t('noHotelsFound') : t('hotelCount', { count: total })}
               </p>
             )}
           </div>
@@ -85,8 +91,9 @@ function SearchResults() {
             hotels={data?.data}
             isLoading={isLoading}
             skeletonCount={6}
-            emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
+            emptyMessage={t('emptyFilterMessage')}
             columns={3}
+            priorityCount={3}
           />
 
           {/* Show featured hotels when no results */}
@@ -116,12 +123,40 @@ export default function SearchPage() {
     <Suspense
       fallback={
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
+          {/* Search form skeleton */}
           <div className="mb-8">
-            <div className="h-64 animate-pulse rounded-2xl bg-gray-200" />
+            <div className="rounded-2xl bg-white p-4 shadow-lg sm:p-6 space-y-4">
+              <div className="h-5 w-20 animate-pulse rounded bg-gray-200" />
+              <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-10 animate-pulse rounded-lg bg-gray-200" />
+                <div className="h-10 animate-pulse rounded-lg bg-gray-200" />
+              </div>
+              <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+              <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200" />
+            </div>
           </div>
+          {/* Results header skeleton */}
           <div className="mb-4">
             <div className="h-7 w-56 animate-pulse rounded bg-gray-200" />
             <div className="mt-2 h-4 w-36 animate-pulse rounded bg-gray-200" />
+          </div>
+          {/* Hotel cards skeleton */}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="aspect-[16/10] w-full animate-pulse bg-gray-200" />
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+                  <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200" />
+                  <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
+                  <div className="mt-auto flex items-end justify-between border-t border-gray-100 pt-2">
+                    <div className="h-6 w-28 animate-pulse rounded bg-gray-200" />
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       }

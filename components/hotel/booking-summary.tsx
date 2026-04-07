@@ -5,6 +5,7 @@ import { useBookingStore } from '@/stores/booking-store'
 import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ShareButton } from '@/components/hotel/share-button'
+import { useTranslations, useLocale } from '@/lib/i18n'
 import type { Hotel } from '@/types/mock-db'
 
 interface BookingSummaryProps {
@@ -17,6 +18,9 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
   const setHotel = useBookingStore((s) => s.setHotel)
   const setSearchParams = useBookingStore((s) => s.setSearchParams)
+  const t = useTranslations('hotel')
+  const tc = useTranslations('common')
+  const locale = useLocale()
 
   // URL uses camelCase (checkIn/checkOut) — must match use-search-filters
   const checkIn = searchParams.get('checkIn') ?? ''
@@ -57,7 +61,7 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
 
   return (
     <aside className="space-y-4">
-      <div className="sticky top-16 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+      <div className="sticky top-20 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
         {/* Rating + Share — always visible, same row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -66,7 +70,7 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
               {hotel.rating.toFixed(1)}
             </span>
             <span className="text-xs text-gray-400">
-              {hotel.reviewCount.toLocaleString('pt-BR')} avaliações
+              {tc('reviewCount', { count: hotel.reviewCount })}
             </span>
           </div>
           <ShareButton hotelName={hotel.name} />
@@ -80,9 +84,9 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
                 <span className="text-sm text-gray-500">{selectedRooms[0].name}</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-bold text-gray-900">
-                    {formatCurrency(selectedRooms[0].pricePerNight)}
+                    {formatCurrency(selectedRooms[0].pricePerNight, locale)}
                   </span>
-                  <span className="text-sm text-gray-500">/noite</span>
+                  <span className="text-sm text-gray-500">{tc('perNight')}</span>
                 </div>
               </div>
             )}
@@ -91,23 +95,23 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
             {isMultiple && (
               <>
                 <div className="rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">
-                  {selectedRooms.length} quartos selecionados
+                  {t('roomsSelectedBadge', { count: selectedRooms.length })}
                 </div>
                 <ul className="space-y-1.5 text-sm">
                   {selectedRooms.map((room) => (
                     <li key={room.id} className="flex items-center justify-between text-gray-600">
                       <span className="truncate pr-2">{room.name}</span>
                       <span className="flex-shrink-0 font-medium text-gray-900">
-                        {formatCurrency(room.pricePerNight)}
-                        <span className="text-xs font-normal text-gray-400">/noite</span>
+                        {formatCurrency(room.pricePerNight, locale)}
+                        <span className="text-xs font-normal text-gray-400">{tc('perNight')}</span>
                       </span>
                     </li>
                   ))}
                 </ul>
                 <li className="flex items-center justify-between text-gray-600">
-                  <span className="truncate pr-2">Valor Total</span>
+                  <span className="truncate pr-2">{t('totalValue')}</span>
                   <span className="flex text-2xl -shrink-0 font-bold text-gray-900">
-                    {formatCurrency(total)}
+                    {formatCurrency(total, locale)}
                   </span>
                 </li>
               </>
@@ -116,10 +120,10 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
             {/* Date range */}
             {hasDates && nights > 0 && (
               <div className="rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600 border border-gray-100">
-                <span className="font-medium text-gray-900">{formatDate(new Date(checkIn))}</span>
+                <span className="font-medium text-gray-900">{formatDate(new Date(checkIn), locale)}</span>
                 {' → '}
-                <span className="font-medium text-gray-900">{formatDate(new Date(checkOut))}</span>
-                <span className="ml-1 text-gray-400">({nights} {nights === 1 ? 'noite' : 'noites'})</span>
+                <span className="font-medium text-gray-900">{formatDate(new Date(checkOut), locale)}</span>
+                <span className="ml-1 text-gray-400">({tc('nightCount', { count: nights })})</span>
               </div>
             )}
 
@@ -127,25 +131,25 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
             <div className="flex items-center gap-1.5 text-sm text-gray-600">
               <GuestIcon />
               <span>
-                <span className="font-medium text-gray-900">{adults} {adults === 1 ? 'adulto' : 'adultos'}</span>
+                <span className="font-medium text-gray-900">{tc('adultCount', { count: adults })}</span>
                 {children > 0 && (
-                  <span>, {children} {children === 1 ? 'criança' : 'crianças'}</span>
+                  <span>, {tc('childCount', { count: children })}</span>
                 )}
-                <span className="text-gray-400"> · {roomsCount} {roomsCount === 1 ? 'quarto' : 'quartos'}</span>
+                <span className="text-gray-400"> · {tc('roomCount', { count: roomsCount })}</span>
               </span>
             </div>
 
             {/* Total */}
             {total > 0 && (
               <div className="flex items-baseline justify-between border-t border-gray-200 pt-3">
-                <span className="text-sm font-medium text-gray-700">Total</span>
-                <span className="text-2xl font-bold text-gray-900">{formatCurrency(total)}</span>
+                <span className="text-sm font-medium text-gray-700">{tc('total')}</span>
+                <span className="text-2xl font-bold text-gray-900">{formatCurrency(total, locale)}</span>
               </div>
             )}
 
             {roomsCount > 1 && !hasEnoughRooms && (
               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                Selecione mais {roomsStillNeeded} {roomsStillNeeded === 1 ? 'quarto' : 'quartos'} para completar sua reserva.
+                {t('selectMoreRoomsMessage', { count: roomsStillNeeded })}
               </p>
             )}
 
@@ -155,7 +159,7 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
               size="md"
               disabled={!hasEnoughRooms}
             >
-              {hasEnoughRooms ? 'Ir para checkout' : `Selecione ${roomsStillNeeded} ${roomsStillNeeded === 1 ? 'quarto' : 'quartos'}`}
+              {hasEnoughRooms ? t('goToCheckout') : t('selectMoreRooms', { count: roomsStillNeeded })}
             </Button>
           </div>
         ) : (
@@ -163,7 +167,7 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
             href="#quartos"
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
           >
-            Ver quartos disponíveis
+            {t('viewAvailableRooms')}
           </a>
         )}
       </div>

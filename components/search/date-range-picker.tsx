@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { toDateInputValue } from '@/lib/utils'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 function CalendarIcon() {
   return (
@@ -26,10 +27,10 @@ function CalendarIcon() {
   )
 }
 
-function formatShortDate(value: string): string {
+function formatShortDate(value: string, locale: string): string {
   if (!value) return ''
   const date = new Date(value + 'T00:00:00')
-  return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' }).format(date)
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(date)
 }
 
 interface DateRangePickerProps {
@@ -51,6 +52,8 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
   const checkInRef = useRef<HTMLInputElement>(null)
   const checkOutRef = useRef<HTMLInputElement>(null)
+  const t = useTranslations('search')
+  const locale = useLocale()
   const today = toDateInputValue(new Date())
   const minCheckOut = checkIn
     ? toDateInputValue(new Date(new Date(checkIn + 'T00:00:00').getTime() + 86400000))
@@ -76,15 +79,15 @@ export function DateRangePicker({
             if (e.key === 'Enter' || e.key === ' ') checkInRef.current?.showPicker?.()
           }}
           className="relative flex flex-1 cursor-pointer flex-col px-4 py-3 select-none hover:bg-gray-50 transition-colors"
-          aria-label="Selecionar data de check-in"
+          aria-label={t('selectCheckIn')}
         >
           <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            Check-in
+            {t('checkIn')}
           </span>
           <div className="mt-1 flex items-center gap-1.5">
             <CalendarIcon />
             <span className={cn('text-sm font-medium', checkIn ? 'text-gray-900' : 'text-gray-400')}>
-              {checkIn ? formatShortDate(checkIn) : 'Selecionar'}
+              {checkIn ? formatShortDate(checkIn, locale) : t('selectDate')}
             </span>
           </div>
           <input
@@ -96,7 +99,7 @@ export function DateRangePicker({
               onCheckInChange(e.target.value)
               if (checkOut && e.target.value >= checkOut) onCheckOutChange('')
             }}
-            aria-label="Data de check-in"
+            aria-label={t('checkInDate')}
             className="absolute inset-0 cursor-pointer opacity-0"
           />
         </div>
@@ -116,16 +119,16 @@ export function DateRangePicker({
             'relative flex flex-1 flex-col px-4 py-3 select-none transition-colors',
             checkIn ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-60'
           )}
-          aria-label="Selecionar data de check-out"
+          aria-label={t('selectCheckOut')}
           aria-disabled={checkIn ? undefined : 'true'}
         >
           <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-            Check-out
+            {t('checkOut')}
           </span>
           <div className="mt-1 flex items-center gap-1.5">
             <CalendarIcon />
             <span className={cn('text-sm font-medium', checkOut ? 'text-gray-900' : 'text-gray-400')}>
-              {checkOut ? formatShortDate(checkOut) : 'Selecionar'}
+              {checkOut ? formatShortDate(checkOut, locale) : t('selectDate')}
             </span>
           </div>
           <input
@@ -136,7 +139,7 @@ export function DateRangePicker({
             value={checkOut}
             disabled={!checkIn}
             onChange={(e) => onCheckOutChange(e.target.value)}
-            aria-label="Data de check-out"
+            aria-label={t('checkOutDate')}
             className="absolute inset-0 cursor-pointer opacity-0 disabled:cursor-not-allowed"
           />
         </div>

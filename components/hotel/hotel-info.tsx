@@ -3,12 +3,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
-import {
-  AMENITY_LABELS,
-  PROPERTY_TYPE_LABELS,
-  CANCELLATION_LABELS,
-  CANCELLATION_DESCRIPTIONS,
-} from '@/lib/labels'
+import { useTranslations, useLocale } from '@/lib/i18n'
 import { AmenitiesDropdown } from '@/components/ui/amenities-dropdown'
 import type { HotelWithRooms } from '@/types/mock-db'
 
@@ -16,13 +11,24 @@ interface HotelInfoProps {
   hotel: HotelWithRooms
 }
 
+const CANCELLATION_COLORS: Record<string, string> = {
+  free: 'text-green-600',
+  moderate: 'text-yellow-600',
+  strict: 'text-red-600',
+}
+
 export function HotelInfo({ hotel }: HotelInfoProps) {
   const searchParams = useSearchParams()
+  const t = useTranslations('hotel')
+  const tc = useTranslations('common')
+  const tl = useTranslations('labels')
+  const ts = useTranslations('search')
+  const locale = useLocale()
   const dateCheckIn = searchParams.get('checkIn')
   const dateCheckOut = searchParams.get('checkOut')
   const adults = Number(searchParams.get('adults')) || 2
   const children = Number(searchParams.get('children')) || 0
-  const cancellation = CANCELLATION_LABELS[hotel.cancellationPolicy]
+  const cancellationColor = CANCELLATION_COLORS[hotel.cancellationPolicy] ?? 'text-gray-600'
   const [policyOpen, setPolicyOpen] = useState(false)
   const totalGuests = adults + children
 
@@ -33,10 +39,10 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       <div>
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-            {PROPERTY_TYPE_LABELS[hotel.propertyType]}
+            {tl('propertyType.' + hotel.propertyType)}
           </span>
-          <span className={`text-xs font-medium ${cancellation.color}`}>
-            {cancellation.label}
+          <span className={`text-xs font-medium ${cancellationColor}`}>
+            {tl('cancellation.' + hotel.cancellationPolicy)}
           </span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
@@ -55,7 +61,7 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
             className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
           >
             <PinIcon />
-            Ver no mapa
+            {t('viewOnMap')}
           </a>
         </div>
       </div>
@@ -67,22 +73,22 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
           {hotel.rating.toFixed(1)}
         </span>
         <span className="text-sm text-gray-500">
-          {hotel.reviewCount.toLocaleString('pt-BR')} avaliações
+          {tc('reviewCount', { count: hotel.reviewCount })}
         </span>
       </div>
 
       {/* Price highlight */}
       <div className="flex items-baseline gap-1">
-        <span className="text-sm text-gray-500">A partir de</span>
+        <span className="text-sm text-gray-500">{t('startingFrom')}</span>
         <span className="text-2xl font-bold text-gray-900">
-          {formatCurrency(hotel.pricePerNight)}
+          {formatCurrency(hotel.pricePerNight, locale)}
         </span>
-        <span className="text-sm text-gray-500">/noite</span>
+        <span className="text-sm text-gray-500">{tc('perNight')}</span>
       </div>
 
       {/* Description */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Sobre</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t('about')}</h2>
         <p className="mt-2 text-sm leading-relaxed text-gray-600">
           {hotel.description}
         </p>
@@ -93,9 +99,9 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         <div className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2.5">
           <GuestsInfoIcon />
           <span className="text-sm font-medium text-blue-700">
-            {adults} {adults === 1 ? 'adulto' : 'adultos'}
+            {tc('adultCount', { count: adults })}
             {children > 0 &&
-              `, ${children} ${children === 1 ? 'criança' : 'crianças'}`}
+              `, ${tc('childCount', { count: children })}`}
           </span>
         </div>
       )}
@@ -103,16 +109,16 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       {/* Check-in/Check-out */}
       <div className="flex items-stretch gap-0 rounded-lg border border-gray-200 overflow-hidden">
         <div className="flex-1 p-4">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in</span>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">{ts('checkIn')}</span>
           <p className="mt-1 text-sm font-semibold text-gray-900">
-            {hotel.checkInTime} - {dateCheckIn ? formatDate(new Date(dateCheckIn)) : ''}
+            {hotel.checkInTime} - {dateCheckIn ? formatDate(new Date(dateCheckIn), locale) : ''}
           </p>
         </div>
         <div className="w-px bg-gray-200" />
         <div className="flex-1 p-4">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-out</span>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">{ts('checkOut')}</span>
           <p className="mt-1 text-sm font-semibold text-gray-900">
-            {hotel.checkOutTime} - {dateCheckOut ? formatDate(new Date(dateCheckOut)) : ''}
+            {hotel.checkOutTime} - {dateCheckOut ? formatDate(new Date(dateCheckOut), locale) : ''}
           </p>
         </div>
       </div>
@@ -120,8 +126,8 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       {/* Amenities — collapsible */}
       <AmenitiesDropdown
         amenities={hotel.amenities}
-        labels={AMENITY_LABELS}
-        title="Comodidades do estabelecimento"
+        labelPrefix="amenity"
+        title={t('hotelAmenities')}
       />
 
       {/* Cancellation policy — collapsible */}
@@ -133,9 +139,9 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
           aria-expanded={policyOpen}
         >
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Política de Cancelamento</h3>
-            <p className={`mt-0.5 text-sm font-medium ${cancellation.color}`}>
-              {cancellation.label}
+            <h3 className="text-sm font-semibold text-gray-900">{t('cancellationPolicy')}</h3>
+            <p className={`mt-0.5 text-sm font-medium ${cancellationColor}`}>
+              {tl('cancellation.' + hotel.cancellationPolicy)}
             </p>
           </div>
           <svg
@@ -151,7 +157,7 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         {policyOpen && (
           <div className="border-t border-gray-200 px-4 pb-4 pt-2">
             <p className="text-xs text-gray-500">
-              {CANCELLATION_DESCRIPTIONS[hotel.cancellationPolicy]}
+              {tl('cancellationDescription.' + hotel.cancellationPolicy)}
             </p>
           </div>
         )}
@@ -162,9 +168,7 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3">
           <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-sm font-medium text-red-700">
-            {hotel.availableRooms === 1
-              ? 'Apenas 1 quarto disponível!'
-              : `Apenas ${hotel.availableRooms} quartos disponíveis!`}
+            {t('onlyRoomAvailable', { count: hotel.availableRooms })}
           </span>
         </div>
       )}

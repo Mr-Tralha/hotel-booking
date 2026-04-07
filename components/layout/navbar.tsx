@@ -4,16 +4,19 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-
-const NAV_ITEMS = [
-  { label: 'Home', href: '/' },
-  { label: 'Minhas Reservas', href: '/reservas' },
-  { label: 'Meu Perfil', href: '/perfil' },
-]
+import { useTranslations } from '@/lib/i18n'
+import { LocaleSwitcher } from './locale-switcher'
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('navigation')
+
+  const NAV_ITEMS = [
+    { label: t('home'), href: '/' },
+    { label: t('myReservations'), href: '/reservas' },
+    { label: t('myProfile'), href: '/perfil' },
+  ]
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -24,50 +27,17 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden sm:flex items-center gap-1">
-          {NAV_ITEMS.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  pathname === item.href
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                )}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {/* Hamburger button (mobile) */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen((v) => !v)}
-          className="sm:hidden inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          aria-expanded={menuOpen}
-          aria-label="Abrir menu"
-        >
-          {menuOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
-      </nav>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="border-t border-gray-100 bg-white sm:hidden">
-          <ul className="flex flex-col px-4 py-2">
+        <div className="hidden sm:flex items-center gap-1">
+          <ul className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  onClick={() => setMenuOpen(false)}
                   className={cn(
-                    'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     pathname === item.href
                       ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   )}
                 >
                   {item.label}
@@ -75,8 +45,53 @@ export function Navbar() {
               </li>
             ))}
           </ul>
+          <div className="ml-2">
+            <LocaleSwitcher />
+          </div>
         </div>
-      )}
+
+        {/* Hamburger button (mobile) */}
+        <div className="flex items-center gap-2 sm:hidden">
+          <LocaleSwitcher />
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            className="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            aria-expanded={menuOpen}
+            aria-label={t('openMenu')}
+          >
+            {menuOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile menu — overlay to avoid layout shift */}
+      <div
+        className={cn(
+          'fixed inset-x-0 top-14 z-40 border-t border-gray-100 bg-white shadow-lg sm:hidden transition-[opacity,visibility] duration-200',
+          menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        )}
+      >
+        <ul className="flex flex-col px-4 py-2">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                tabIndex={menuOpen ? 0 : -1}
+                className={cn(
+                  'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  pathname === item.href
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                )}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </header>
   )
 }

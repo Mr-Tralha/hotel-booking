@@ -1,11 +1,63 @@
+import { cookies } from 'next/headers'
+import dynamic from 'next/dynamic'
+import { defaultLocale, getMessages, getServerTranslations } from '@/lib/i18n'
+import type { Locale } from '@/lib/i18n'
 import { SearchForm } from '@/components/search/search-form'
-import { RecentSearches } from '@/components/search/recent-searches'
-import { FeaturedHotels } from '@/components/hotels/featured-hotels'
+import { getHotels } from '@/lib/mock-db'
 
-export default function Home() {
+function FeaturedHotelsSkeleton() {
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:py-16">
+      <div className="mb-8 flex flex-col items-center gap-2">
+        <div className="h-8 w-64 animate-pulse rounded bg-gray-200" />
+        <div className="h-5 w-80 animate-pulse rounded bg-gray-200" />
+      </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="aspect-[16/10] animate-pulse bg-gray-200" />
+            <div className="space-y-2 p-4">
+              <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-4 w-1/3 animate-pulse rounded bg-gray-200" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+const RecentSearches = dynamic(
+  () => import('@/components/search/recent-searches').then((m) => m.RecentSearches),
+)
+const FeaturedHotels = dynamic(
+  () => import('@/components/hotels/featured-hotels').then((m) => m.FeaturedHotels),
+  { loading: () => <FeaturedHotelsSkeleton /> },
+)
+
+async function getLocale(): Promise<Locale> {
+  const cookieStore = await cookies()
+  const value = cookieStore.get('NEXT_LOCALE')?.value
+  if (value === 'en' || value === 'pt-BR') return value
+  return defaultLocale
+}
+
+export default async function Home() {
+  const locale = await getLocale()
+  const messages = await getMessages(locale)
+  const t = getServerTranslations(messages, locale, 'home')
+
+  const featuredData = getHotels({
+    featured: true,
+    _sort: 'rating',
+    _order: 'desc',
+    _limit: 6,
+  })
+
   return (
     <main className="flex flex-1 flex-col">
-      {/* Hero */}
+      {/* Hero — server-rendered for fast LCP */}
       <section className="relative flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-4 pb-28 pt-16 text-center sm:pb-32 sm:pt-20 md:pb-36 md:pt-24">
         {/* Pattern overlay */}
         <div
@@ -18,10 +70,10 @@ export default function Home() {
         />
 
         <h1 className="relative text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-          Encontre a hospedagem ideal
+          {t('heroTitle')}
         </h1>
         <p className="relative mt-3 max-w-md text-base text-blue-100 sm:text-lg">
-          Hotéis, pousadas e resorts com as melhores tarifas em todo o Brasil
+          {t('heroSubtitle')}
         </p>
       </section>
 
@@ -33,8 +85,8 @@ export default function Home() {
       {/* Recent searches */}
       <RecentSearches />
 
-      {/* Featured hotels */}
-      <FeaturedHotels />
+      {/* Featured hotels — server-prefetched data eliminates client waterfall */}
+      <FeaturedHotels initialData={featuredData} />
     </main>
   )
 }

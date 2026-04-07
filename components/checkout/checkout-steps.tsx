@@ -1,5 +1,3 @@
-'use client'
-
 import { cn } from '@/lib/utils'
 
 interface Step {
@@ -9,11 +7,12 @@ interface Step {
 interface CheckoutStepsProps {
   steps: Step[]
   currentStep: number
+  ariaLabel?: string
 }
 
-export function CheckoutSteps({ steps, currentStep }: CheckoutStepsProps) {
+export function CheckoutSteps({ steps, currentStep, ariaLabel }: CheckoutStepsProps) {
   return (
-    <nav aria-label="Etapas do checkout">
+    <nav aria-label={ariaLabel ?? 'Checkout steps'}>
       <ol className="flex items-center gap-2">
         {steps.map((step, index) => {
           const isCompleted = index < currentStep

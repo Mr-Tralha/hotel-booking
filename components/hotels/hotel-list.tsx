@@ -3,6 +3,7 @@
 import type { Hotel } from '@/types/mock-db'
 import { HotelCard } from './hotel-card'
 import { HotelCardSkeleton } from './hotel-card-skeleton'
+import { useTranslations } from '@/lib/i18n'
 
 interface HotelListProps {
   hotels?: Hotel[]
@@ -10,15 +11,20 @@ interface HotelListProps {
   skeletonCount?: number
   emptyMessage?: string
   columns?: 2 | 3
+  /** Number of cards with priority images (above the fold). Default: 0 */
+  priorityCount?: number
 }
 
 export function HotelList({
   hotels,
   isLoading,
   skeletonCount = 4,
-  emptyMessage = 'Nenhum hotel encontrado.',
+  emptyMessage,
   columns = 3,
+  priorityCount = 0,
 }: HotelListProps) {
+  const ts = useTranslations('search')
+  const resolvedEmptyMessage = emptyMessage ?? ts('noHotelsFound')
   const gridCols =
     columns === 2
       ? 'grid-cols-1 sm:grid-cols-2'
@@ -37,15 +43,15 @@ export function HotelList({
   if (!hotels || hotels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-lg text-gray-500">{emptyMessage}</p>
+        <p className="text-lg text-gray-500">{resolvedEmptyMessage}</p>
       </div>
     )
   }
 
   return (
     <div className={`grid gap-6 ${gridCols}`}>
-      {hotels.map((hotel) => (
-        <HotelCard key={hotel.id} hotel={hotel} />
+      {hotels.map((hotel, index) => (
+        <HotelCard key={hotel.id} hotel={hotel} priority={index < priorityCount} />
       ))}
     </div>
   )

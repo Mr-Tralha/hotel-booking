@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface AmenitiesDropdownProps<T extends string> {
   amenities: T[]
-  labels: Record<T, string>
+  labelPrefix: string
   title: string
 }
 
@@ -15,9 +16,10 @@ interface AmenitiesDropdownProps<T extends string> {
  */
 export function AmenitiesDropdown<T extends string>({
   amenities,
-  labels,
+  labelPrefix,
   title,
 }: AmenitiesDropdownProps<T>) {
+  const tl = useTranslations('labels')
   const [open, setOpen] = useState(false)
 
   if (amenities.length === 0) return null
@@ -64,7 +66,7 @@ export function AmenitiesDropdown<T extends string>({
                 className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700"
               >
                 <CheckIcon />
-                {labels[amenity]}
+                {tl(labelPrefix + '.' + amenity)}
               </div>
             ))}
           </div>

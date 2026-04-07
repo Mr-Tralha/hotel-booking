@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { personalDataSchema, type PersonalDataForm } from '@/lib/validations/checkout'
+import { createPersonalDataSchema, type PersonalDataForm } from '@/lib/validations/checkout'
+import { useTranslations } from '@/lib/i18n'
 import { useUserStore } from '@/stores/user-store'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,10 @@ export default function PerfilPage() {
   const profile = useUserStore((s) => s.profile)
   const setProfile = useUserStore((s) => s.setProfile)
   const [saved, setSaved] = useState(false)
+  const t = useTranslations('profile')
+  const tc = useTranslations('checkout')
+  const tv = useTranslations('validation')
+  const personalDataSchema = createPersonalDataSchema(tv)
 
   const {
     register,
@@ -61,10 +66,10 @@ export default function PerfilPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
       <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-        Meu Perfil
+        {t('title')}
       </h1>
       <p className="mt-1 text-sm text-gray-500">
-        Seus dados pessoais serão utilizados para autopreenchimento no checkout.
+        {t('subtitle')}
       </p>
 
       <form
@@ -73,25 +78,25 @@ export default function PerfilPage() {
         noValidate
       >
         <Input
-          label="Nome completo"
-          placeholder="Maria da Silva"
+          label={tc('fullName')}
+          placeholder={tc('fullNamePlaceholder')}
           error={errors.fullName?.message}
           {...register('fullName')}
         />
 
         <Input
-          label="E-mail"
+          label={tc('email')}
           type="email"
-          placeholder="maria@exemplo.com"
+          placeholder={tc('emailPlaceholder')}
           error={errors.email?.message}
           {...register('email')}
         />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
-            label="Telefone"
+            label={tc('phone')}
             type="tel"
-            placeholder="(11) 99999-9999"
+            placeholder={tc('phonePlaceholder')}
             error={errors.phone?.message}
             {...register('phone', {
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,8 +106,8 @@ export default function PerfilPage() {
           />
 
           <Input
-            label="CPF"
-            placeholder="000.000.000-00"
+            label={tc('cpf')}
+            placeholder={tc('cpfPlaceholder')}
             error={errors.cpf?.message}
             {...register('cpf', {
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,11 +119,11 @@ export default function PerfilPage() {
 
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" size="lg">
-            Salvar dados
+            {t('saveData')}
           </Button>
           {saved && (
             <span className="text-sm font-medium text-green-600" aria-live="polite">
-              Dados salvos com sucesso!
+              {t('savedSuccess')}
             </span>
           )}
         </div>

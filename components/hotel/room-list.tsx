@@ -2,12 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { RoomCard } from '@/components/room/room-card'
-import { RoomDetailModal } from '@/components/room/room-detail-modal'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { useBookingStore } from '@/stores/booking-store'
 import { useTranslations } from '@/lib/i18n'
 import type { Hotel, Room } from '@/types/mock-db'
+
+const RoomDetailModal = dynamic(
+  () => import('@/components/room/room-detail-modal').then((m) => m.RoomDetailModal),
+  { ssr: false }
+)
+const ImageLightbox = dynamic(
+  () => import('@/components/ui/image-lightbox').then((m) => m.ImageLightbox),
+  { ssr: false }
+)
 
 interface RoomListProps {
   hotel: Hotel

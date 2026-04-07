@@ -10,9 +10,11 @@ import type { Hotel } from '@/types/mock-db'
 interface HotelCardProps {
   hotel: Hotel
   hrefOverride?: string
+  /** Mark image as LCP candidate (above the fold) */
+  priority?: boolean
 }
 
-export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
+export function HotelCard({ hotel, hrefOverride, priority = false }: HotelCardProps) {
   const searchParams = useSearchParams()
   const t = useTranslations('common')
   const th = useTranslations('hotel')
@@ -43,6 +45,7 @@ export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
+          {...(priority ? { priority: true } : {})}
         />
         <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-xs font-medium text-gray-700 backdrop-blur-sm">
           {tl('propertyType.' + hotel.propertyType)}

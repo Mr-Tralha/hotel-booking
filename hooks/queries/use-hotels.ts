@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { fetchHotels } from '@/lib/api'
 import type { HotelSearchParams } from '@/types/mock-db'
 
@@ -18,5 +18,6 @@ export function useHotels(
     queryKey: ['hotels', params],
     queryFn: () => fetchHotels(params),
     enabled: options?.enabled ?? hasFilter,
+    placeholderData: keepPreviousData,
   })
 }

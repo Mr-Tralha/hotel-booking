@@ -1,9 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useState, useCallback } from 'react'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { useTranslations } from '@/lib/i18n'
+
+const ImageLightbox = dynamic(
+  () => import('@/components/ui/image-lightbox').then((m) => m.ImageLightbox),
+  { ssr: false }
+)
 
 
 interface HotelGalleryProps {

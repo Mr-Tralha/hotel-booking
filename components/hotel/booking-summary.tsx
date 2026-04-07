@@ -61,7 +61,7 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
 
   return (
     <aside className="space-y-4">
-      <div className="sticky top-16 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+      <div className="sticky top-20 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
         {/* Rating + Share — always visible, same row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

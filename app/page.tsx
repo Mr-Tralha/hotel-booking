@@ -1,16 +1,31 @@
-'use client'
-
+import { cookies } from 'next/headers'
+import dynamic from 'next/dynamic'
+import { defaultLocale, getMessages, getServerTranslations } from '@/lib/i18n'
+import type { Locale } from '@/lib/i18n'
 import { SearchForm } from '@/components/search/search-form'
-import { RecentSearches } from '@/components/search/recent-searches'
-import { FeaturedHotels } from '@/components/hotels/featured-hotels'
-import { useTranslations } from '@/lib/i18n'
 
-export default function Home() {
-  const t = useTranslations('home')
+const RecentSearches = dynamic(
+  () => import('@/components/search/recent-searches').then((m) => m.RecentSearches),
+)
+const FeaturedHotels = dynamic(
+  () => import('@/components/hotels/featured-hotels').then((m) => m.FeaturedHotels),
+)
+
+async function getLocale(): Promise<Locale> {
+  const cookieStore = await cookies()
+  const value = cookieStore.get('NEXT_LOCALE')?.value
+  if (value === 'en' || value === 'pt-BR') return value
+  return defaultLocale
+}
+
+export default async function Home() {
+  const locale = await getLocale()
+  const messages = getMessages(locale)
+  const t = getServerTranslations(messages, locale, 'home')
 
   return (
     <main className="flex flex-1 flex-col">
-      {/* Hero */}
+      {/* Hero — server-rendered for fast LCP */}
       <section className="relative flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-4 pb-28 pt-16 text-center sm:pb-32 sm:pt-20 md:pb-36 md:pt-24">
         {/* Pattern overlay */}
         <div

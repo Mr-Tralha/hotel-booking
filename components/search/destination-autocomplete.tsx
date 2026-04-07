@@ -149,11 +149,14 @@ export function DestinationAutocomplete({
     }
   }
 
-  // Scroll active item into view
+  // Scroll active item into view (deferred to avoid forced reflow)
   useEffect(() => {
     if (activeIndex >= 0 && listRef.current) {
-      const item = listRef.current.children[activeIndex] as HTMLElement
-      item?.scrollIntoView({ block: 'nearest' })
+      const list = listRef.current
+      requestAnimationFrame(() => {
+        const item = list.children[activeIndex] as HTMLElement
+        item?.scrollIntoView({ block: 'nearest' })
+      })
     }
   }, [activeIndex])
 

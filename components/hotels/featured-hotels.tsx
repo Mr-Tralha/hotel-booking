@@ -48,6 +48,7 @@ export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
         isLoading={isLoading}
         skeletonCount={6}
         emptyMessage={t('noHotels')}
+        priorityCount={3}
       />
     </section>
   )

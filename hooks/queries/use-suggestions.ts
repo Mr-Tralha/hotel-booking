@@ -6,6 +6,7 @@ export function useSuggestions(query: string) {
     queryKey: ['suggestions', query],
     queryFn: () => fetchSuggestions(query),
     enabled: query.length >= 2,
+    staleTime: 5 * 60 * 1000, // suggestions rarely change
     placeholderData: (prev) => prev,
   })
 }

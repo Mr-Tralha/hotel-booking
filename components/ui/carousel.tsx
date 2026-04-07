@@ -30,7 +30,11 @@ export function Carousel({ children, title, className = '' }: CarouselProps) {
   function scroll(direction: 'left' | 'right') {
     const container = scrollRef.current
     if (!container) return
-    const cardWidth = container.firstElementChild?.getBoundingClientRect().width ?? 300
+    // Use scrollWidth-based calculation to avoid getBoundingClientRect forced reflow
+    const childCount = container.children.length
+    const cardWidth = childCount > 0
+      ? (container.scrollWidth - (childCount - 1) * 16) / childCount
+      : 300
     const distance = direction === 'left' ? -(cardWidth + 16) : cardWidth + 16
     container.scrollBy({ left: distance, behavior: 'smooth' })
   }

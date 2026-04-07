@@ -65,29 +65,33 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="border-t border-gray-100 bg-white sm:hidden">
-          <ul className="flex flex-col px-4 py-2">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={cn(
-                    'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                    pathname === item.href
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Mobile menu — overlay to avoid layout shift */}
+      <div
+        className={cn(
+          'fixed inset-x-0 top-14 z-40 border-t border-gray-100 bg-white shadow-lg sm:hidden transition-[opacity,visibility] duration-200',
+          menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        )}
+      >
+        <ul className="flex flex-col px-4 py-2">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                tabIndex={menuOpen ? 0 : -1}
+                className={cn(
+                  'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  pathname === item.href
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                )}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </header>
   )
 }

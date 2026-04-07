@@ -3,26 +3,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn, formatCurrency } from '@/lib/utils'
+import { AMENITY_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/labels'
 import type { Hotel } from '@/types/mock-db'
-
-const PROPERTY_TYPE_LABEL: Record<Hotel['propertyType'], string> = {
-  hotel: 'Hotel',
-  pousada: 'Pousada',
-  resort: 'Resort',
-}
-
-const AMENITY_LABEL: Partial<Record<string, string>> = {
-  wifi: 'Wi-Fi',
-  pool: 'Piscina',
-  spa: 'Spa',
-  restaurant: 'Restaurante',
-  gym: 'Academia',
-  parking: 'Estacionamento',
-  bar: 'Bar',
-  room_service: 'Room Service',
-  beach_access: 'Acesso à Praia',
-  kids_club: 'Kids Club',
-}
 
 interface HotelCardProps {
   hotel: Hotel
@@ -47,7 +29,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-xs font-medium text-gray-700 backdrop-blur-sm">
-          {PROPERTY_TYPE_LABEL[hotel.propertyType]}
+          {PROPERTY_TYPE_LABELS[hotel.propertyType]}
         </span>
         {hotel.availableRooms <= 3 && (
           <span className="absolute right-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
@@ -86,7 +68,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
               key={amenity}
               className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
             >
-              {AMENITY_LABEL[amenity] ?? amenity}
+              {AMENITY_LABELS[amenity]}
             </span>
           ))}
           {extraCount > 0 && (

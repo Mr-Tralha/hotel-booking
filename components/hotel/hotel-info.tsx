@@ -1,40 +1,11 @@
 import { formatCurrency } from '@/lib/utils'
+import {
+  AMENITY_LABELS,
+  PROPERTY_TYPE_LABELS,
+  CANCELLATION_LABELS,
+  CANCELLATION_DESCRIPTIONS,
+} from '@/lib/labels'
 import type { HotelWithRooms, Amenity } from '@/types/mock-db'
-
-const AMENITY_LABELS: Record<Amenity, string> = {
-  wifi: 'Wi-Fi',
-  pool: 'Piscina',
-  spa: 'Spa',
-  restaurant: 'Restaurante',
-  gym: 'Academia',
-  parking: 'Estacionamento',
-  bar: 'Bar',
-  room_service: 'Room Service',
-  beach_access: 'Acesso à Praia',
-  kids_club: 'Kids Club',
-  business_center: 'Business Center',
-  concierge: 'Concierge',
-  valet: 'Manobrista',
-  lounge_access: 'Acesso ao Lounge',
-}
-
-const PROPERTY_TYPE_LABEL: Record<HotelWithRooms['propertyType'], string> = {
-  hotel: 'Hotel',
-  pousada: 'Pousada',
-  resort: 'Resort',
-}
-
-const CANCELLATION_LABELS: Record<HotelWithRooms['cancellationPolicy'], { label: string; color: string }> = {
-  free: { label: 'Cancelamento grátis', color: 'text-green-600' },
-  moderate: { label: 'Cancelamento moderado', color: 'text-yellow-600' },
-  strict: { label: 'Cancelamento restrito', color: 'text-red-600' },
-}
-
-const CANCELLATION_DESCRIPTIONS: Record<HotelWithRooms['cancellationPolicy'], string> = {
-  free: 'Cancele até 24 horas antes do check-in sem custos.',
-  moderate: 'Cancele até 5 dias antes do check-in para reembolso de 50%.',
-  strict: 'Não reembolsável. Cancelamentos não geram reembolso.',
-}
 
 interface HotelInfoProps {
   hotel: HotelWithRooms
@@ -49,7 +20,7 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       <div>
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-            {PROPERTY_TYPE_LABEL[hotel.propertyType]}
+            {PROPERTY_TYPE_LABELS[hotel.propertyType]}
           </span>
           <span className={`text-xs font-medium ${cancellation.color}`}>
             {cancellation.label}

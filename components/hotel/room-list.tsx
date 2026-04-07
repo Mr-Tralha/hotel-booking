@@ -3,37 +3,10 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils'
+import { ROOM_AMENITY_LABELS, BED_TYPE_LABELS } from '@/lib/labels'
 import { useBookingStore } from '@/stores/booking-store'
 import { Button } from '@/components/ui/button'
-import type { Hotel, Room, RoomAmenity, Bed } from '@/types/mock-db'
-
-const ROOM_AMENITY_LABELS: Record<RoomAmenity, string> = {
-  ocean_view: 'Vista para o mar',
-  city_view: 'Vista da cidade',
-  garden_view: 'Vista do jardim',
-  balcony: 'Varanda',
-  terrace: 'Terraço',
-  bathtub: 'Banheira',
-  minibar: 'Frigobar',
-  safe: 'Cofre',
-  aircon: 'Ar condicionado',
-  desk: 'Mesa de trabalho',
-  kitchen: 'Cozinha',
-  living_room: 'Sala de estar',
-  sound_system: 'Sistema de som',
-  butler: 'Mordomo',
-  pool_access: 'Acesso à piscina',
-  garden: 'Jardim privativo',
-}
-
-const BED_TYPE_LABELS: Record<Bed['type'], string> = {
-  single: 'Solteiro',
-  double: 'Casal',
-  queen: 'Queen',
-  king: 'King',
-  twin: 'Twin',
-  sofa_bed: 'Sofá-cama',
-}
+import type { Hotel, Room } from '@/types/mock-db'
 
 interface RoomListProps {
   hotel: Hotel

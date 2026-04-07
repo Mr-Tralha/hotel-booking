@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react'
 import { useBookingStore } from '@/stores/booking-store'
-import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
+import { formatCurrency, formatDate, calculateNights, calculateTotal, TAX_RATE } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useTranslations, useLocale } from '@/lib/i18n'
@@ -17,8 +17,6 @@ interface BookingSnapshot {
   adults: number
   children: number
 }
-
-const TAX_RATE = 0.12
 
 export default function ConfirmationPage({
   params,

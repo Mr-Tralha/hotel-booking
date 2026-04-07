@@ -1,3 +1,6 @@
+/** Taxa de impostos aplicada sobre o subtotal da reserva (12%) */
+export const TAX_RATE = 0.12
+
 /**
  * Formata valor em reais (BRL)
  */

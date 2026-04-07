@@ -1,10 +1,8 @@
 'use client'
 
 import { useBookingStore } from '@/stores/booking-store'
-import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
+import { formatCurrency, formatDate, calculateNights, calculateTotal, TAX_RATE } from '@/lib/utils'
 import { useTranslations, useLocale } from '@/lib/i18n'
-
-const TAX_RATE = 0.12
 
 export function CheckoutSummary() {
   const hotel = useBookingStore((s) => s.hotel)

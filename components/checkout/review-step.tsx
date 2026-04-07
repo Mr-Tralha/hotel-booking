@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createReviewSchema, type ReviewForm } from '@/lib/validations/checkout'
 import type { PersonalDataForm, PaymentForm } from '@/lib/validations/checkout'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
-import { formatCurrency, formatDate, calculateNights, calculateTotal } from '@/lib/utils'
+import { formatCurrency, formatDate, calculateNights, calculateTotal, TAX_RATE } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { useTranslations, useLocale } from '@/lib/i18n'
@@ -19,7 +19,6 @@ interface ReviewStepProps {
   isSubmitting: boolean
 }
 
-const TAX_RATE = 0.12
 
 export function ReviewStep({
   personalData,

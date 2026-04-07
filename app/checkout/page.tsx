@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useBookingStore } from '@/stores/booking-store'
 import { useUserStore } from '@/stores/user-store'
 import { useReservationsStore } from '@/stores/reservations-store'
-import { calculateNights, calculateTotal } from '@/lib/utils'
+import { calculateNights, calculateTotal, TAX_RATE } from '@/lib/utils'
 import { CheckoutSteps } from '@/components/checkout/checkout-steps'
 import { CheckoutSummary } from '@/components/checkout/checkout-summary'
 import { PersonalDataStep } from '@/components/checkout/personal-data-step'
@@ -82,7 +82,6 @@ export default function CheckoutPage() {
 
     // Persist booking to reservations store
     if (hotel && checkIn && checkOut) {
-      const TAX_RATE = 0.12
       const nights = calculateNights(new Date(checkIn), new Date(checkOut))
       const subtotal = calculateTotal(selectedRooms, nights)
       const taxes = Math.round(subtotal * TAX_RATE * 100) / 100

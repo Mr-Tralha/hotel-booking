@@ -1,6 +1,7 @@
 'use client'
 
-import { formatCurrency } from '@/lib/utils'
+import { useBookingStore } from '@/stores/booking-store'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import {
   AMENITY_LABELS,
   PROPERTY_TYPE_LABELS,
@@ -15,7 +16,10 @@ interface HotelInfoProps {
 }
 
 export function HotelInfo({ hotel }: HotelInfoProps) {
+  const dateCheckIn = useBookingStore((s) => s.checkIn)
+  const dateCheckOut = useBookingStore((s) => s.checkOut)
   const cancellation = CANCELLATION_LABELS[hotel.cancellationPolicy]
+
 
   return (
     <div className="space-y-6">
@@ -83,14 +87,14 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         <div className="flex-1 p-4">
           <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in</span>
           <p className="mt-1 text-sm font-semibold text-gray-900">
-            {hotel.checkInTime}
+            {hotel.checkInTime} - {dateCheckIn ? formatDate(new Date(dateCheckIn)) : ''}
           </p>
         </div>
         <div className="w-px bg-gray-200" />
         <div className="flex-1 p-4">
           <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-out</span>
           <p className="mt-1 text-sm font-semibold text-gray-900">
-            {hotel.checkOutTime}
+            {hotel.checkOutTime} - {dateCheckOut ? formatDate(new Date(dateCheckOut)) : ''}
           </p>
         </div>
       </div>

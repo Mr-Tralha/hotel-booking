@@ -25,7 +25,7 @@ export default function Home() {
       </section>
 
       {/* Search card — sobrepõe a hero */}
-      <div className="relative z-10 mx-auto -mt-20 w-full max-w-xl px-4 sm:-mt-24 md:-mt-28">
+      <div className="relative z-10 mx-auto -mt-20 w-full max-w-6xl px-4 sm:-mt-24 md:-mt-28">
         <SearchForm />
       </div>
 

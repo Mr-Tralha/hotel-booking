@@ -3,6 +3,7 @@
 import { Suspense } from 'react'
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
+import { NAVBAR_HEIGHT_PX } from '@/lib/constants'
 import { SearchForm } from '@/components/search/search-form'
 import { SearchFilters } from '@/components/search/search-filters'
 import { HotelList } from '@/components/hotels/hotel-list'
@@ -57,8 +58,7 @@ function SearchResults() {
             requestAnimationFrame(() => {
               const el = document.getElementById('hotel-results')
               if (!el) return
-              const navbarHeight = 60
-              const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+              const top = el.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT_PX
               window.scrollTo({ top, behavior: 'smooth' })
             })
           }}

@@ -42,7 +42,6 @@ export function HotelCard({ hotel, hrefOverride, priority = false }: HotelCardPr
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           priority={priority}
-          loading={priority ? 'eager' : 'lazy'}
         />
         <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-xs font-medium text-gray-700 backdrop-blur-sm">
           {PROPERTY_TYPE_LABELS[hotel.propertyType]}

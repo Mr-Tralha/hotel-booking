@@ -63,7 +63,7 @@ Só marcar com `'use client'` se o componente usar:
 - `CheckoutSteps` — puramente visual
 - `SectionNav` — links estáticos
 - `Breadcrumb` — links estáticos
-- `Button` — UI pura
+- `Button` — UI pura (pode ser client se receber `onClick` de um parent client)
 
 ### Componentes que devem ser Client
 

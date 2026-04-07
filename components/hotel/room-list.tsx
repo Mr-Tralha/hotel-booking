@@ -19,7 +19,7 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
   return (
     <section id="quartos">
       <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-        Quartos DisponÃ­veis
+        Quartos Disponíveis
       </h2>
       <div className="mt-4 space-y-4">
         {rooms.map((room) => (

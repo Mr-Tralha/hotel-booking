@@ -26,7 +26,7 @@ export function HotelReviews({ hotelId }: HotelReviewsProps) {
       {!isLoading && data && data.data.length === 0 && (
         <>
           {title}
-          <p className="text-sm text-gray-500 py-4">
+          <p className="text-sm text-gray-500 py-4 mt-4">
             Nenhuma avaliação disponível para este hotel.
           </p>
         </>
@@ -34,7 +34,7 @@ export function HotelReviews({ hotelId }: HotelReviewsProps) {
 
       {data && data.data.length > 0 && (
         <>
-          <Carousel title={title}>
+          <Carousel title={title} className="mt-4">
             {data.data.map((review) => (
               <CarouselItem key={review.id}>
                 <article className="h-full rounded-xl border border-gray-200 bg-white p-4 sm:p-5">

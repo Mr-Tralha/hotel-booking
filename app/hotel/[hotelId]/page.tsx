@@ -178,7 +178,7 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
         </div>
       </div>
 
-      <FeaturedHotels />
+      <FeaturedHotels recommended />
     </>
   )
 }

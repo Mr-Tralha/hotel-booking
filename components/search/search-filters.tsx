@@ -2,12 +2,16 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { AMENITY_LABELS } from '@/lib/labels'
+import type { Amenity } from '@/types/mock-db'
 
 interface SearchFiltersProps {
   priceMin: string
   priceMax: string
   ratingMin: string
   propertyType: string
+  amenities: string
+  sort: string
   onFilterChange: (updates: Record<string, string | undefined>) => void
 }
 
@@ -24,6 +28,18 @@ const RATING_OPTIONS = [
   { value: '4.5', label: '4.5+ estrelas' },
 ]
 
+const SORT_OPTIONS = [
+  { value: '', label: 'Relevância' },
+  { value: 'price_asc', label: 'Menor preço' },
+  { value: 'rating_desc', label: 'Melhor avaliação' },
+  { value: 'popular', label: 'Mais popular' },
+]
+
+const FILTER_AMENITIES: Amenity[] = [
+  'wifi', 'pool', 'parking', 'gym', 'restaurant', 'spa',
+  'bar', 'breakfast', 'room_service', 'beach_access',
+]
+
 const PRICE_MIN = 0
 const PRICE_MAX = 2000
 const PRICE_STEP = 50
@@ -33,9 +49,11 @@ export function SearchFilters({
   priceMax,
   ratingMin,
   propertyType,
+  amenities,
+  sort,
   onFilterChange,
 }: SearchFiltersProps) {
-  const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType)
+  const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType || amenities)
 
   const minVal = priceMin ? Number(priceMin) : PRICE_MIN
   const maxVal = priceMax ? Number(priceMax) : PRICE_MAX
@@ -43,11 +61,21 @@ export function SearchFilters({
   // Parse multi-select property types (comma-separated)
   const selectedTypes = propertyType ? propertyType.split(',') : []
 
+  // Parse multi-select amenities (comma-separated)
+  const selectedAmenities = amenities ? amenities.split(',') : []
+
   function togglePropertyType(value: string) {
     const next = selectedTypes.includes(value)
       ? selectedTypes.filter((t) => t !== value)
       : [...selectedTypes, value]
     onFilterChange({ propertyType: next.length > 0 ? next.join(',') : undefined })
+  }
+
+  function toggleAmenity(value: string) {
+    const next = selectedAmenities.includes(value)
+      ? selectedAmenities.filter((a) => a !== value)
+      : [...selectedAmenities, value]
+    onFilterChange({ amenities: next.length > 0 ? next.join(',') : undefined })
   }
 
   return (
@@ -63,6 +91,7 @@ export function SearchFilters({
                 priceMax: undefined,
                 ratingMin: undefined,
                 propertyType: undefined,
+                amenities: undefined,
               })
             }
             className="text-xs font-medium text-blue-600 hover:text-blue-700"
@@ -147,7 +176,7 @@ export function SearchFilters({
         </div>
       </fieldset>
 
-      {/* Property type — multi-select with radio visual */}
+      {/* Property type — multi-select */}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium text-gray-700">
           Tipo de propriedade
@@ -185,6 +214,73 @@ export function SearchFilters({
               </label>
             )
           })}
+        </div>
+      </fieldset>
+
+      {/* Comodidades — multi-select */}
+      <fieldset className="flex flex-col gap-2">
+        <legend className="text-sm font-medium text-gray-700">
+          Comodidades
+        </legend>
+        <div className="flex flex-col gap-1.5">
+          {FILTER_AMENITIES.map((amenity) => {
+            const checked = selectedAmenities.includes(amenity)
+            return (
+              <label
+                key={amenity}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors border',
+                  checked
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                )}
+              >
+                <span
+                  className={cn(
+                    'flex h-4 w-4 items-center justify-center rounded-sm border-2 flex-shrink-0 transition-colors',
+                    checked ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                  )}
+                >
+                  {checked && (
+                    <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M1.5 5L4 7.5L8.5 2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleAmenity(amenity)}
+                  className="sr-only"
+                />
+                {AMENITY_LABELS[amenity]}
+              </label>
+            )
+          })}
+        </div>
+      </fieldset>
+
+      {/* Ordenação */}
+      <fieldset className="flex flex-col gap-2">
+        <legend className="text-sm font-medium text-gray-700">
+          Ordenar por
+        </legend>
+        <div className="flex flex-col gap-1.5">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onFilterChange({ sort: opt.value === '' ? undefined : opt.value })}
+              className={cn(
+                'flex items-center rounded-lg px-3 py-2 text-sm transition-colors border text-left',
+                sort === opt.value
+                  ? 'bg-blue-50 border-blue-200 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </fieldset>
     </div>

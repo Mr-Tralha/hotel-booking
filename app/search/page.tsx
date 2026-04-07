@@ -4,9 +4,9 @@ import { Suspense } from 'react'
 import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { SearchForm } from '@/components/search/search-form'
+import { SearchFilters } from '@/components/search/search-filters'
 import { HotelList } from '@/components/hotels/hotel-list'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
-import { SortSelector } from '@/components/search/sort-selector'
 import { Pagination } from '@/components/ui/pagination'
 
 function SearchResults() {
@@ -21,6 +21,7 @@ function SearchResults() {
     priceMax,
     ratingMin,
     propertyType,
+    amenities,
     sort,
     page,
     apiParams,
@@ -48,56 +49,64 @@ function SearchResults() {
             priceMax,
             ratingMin,
             propertyType,
+            amenities,
             sort,
+          }}
+          onAfterSubmit={() => {
+            const el = document.getElementById('hotel-results')
+            if (!el) return
+            const navbarHeight = 60 // h-14 = 3.5rem = 56px ~ 60px with margin
+            const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight
+            window.scrollTo({ top, behavior: 'smooth' })
           }}
         />
       </div>
 
-      {/* Results header */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
-            {destination
-              ? `Hotéis em ${destination}`
-              : 'Resultados da busca'}
-          </h1>
-          {data && (
-            <p className="mt-0.5 text-sm text-gray-500">
-              {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
-            </p>
+      <div className="flex gap-6">
+
+        {/* Results */}
+        <div id="hotel-results" className="min-w-0 flex-1">
+          {/* Results header */}
+          <div className="mb-4">
+            <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
+              {destination
+                ? `Hotéis em ${destination}`
+                : 'Resultados da busca'}
+            </h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-gray-500">
+                {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
+              </p>
+            )}
+          </div>
+
+          {/* Hotel grid */}
+          <HotelList
+            hotels={data?.data}
+            isLoading={isLoading}
+            skeletonCount={6}
+            emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
+            columns={3}
+          />
+
+          {/* Show featured hotels when no results */}
+          {!isLoading && data && data.data.length === 0 && (
+            <FeaturedHotels />
+          )}
+
+          {/* Pagination */}
+          {!isLoading && total > 0 && (
+            <div className="mt-8">
+              <Pagination
+                page={page}
+                total={total}
+                limit={limit}
+                onPageChange={(p) => setParams({ page: String(p) })}
+              />
+            </div>
           )}
         </div>
-        <SortSelector
-          value={sort}
-          onChange={(v) => setParams({ sort: v })}
-        />
       </div>
-
-      {/* Hotel grid */}
-      <HotelList
-        hotels={data?.data}
-        isLoading={isLoading}
-        skeletonCount={6}
-        emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
-        columns={3}
-      />
-
-      {/* Show featured hotels when no results */}
-      {!isLoading && data && data.data.length === 0 && (
-        <FeaturedHotels />
-      )}
-
-      {/* Pagination */}
-      {!isLoading && total > 0 && (
-        <div className="mt-8">
-          <Pagination
-            page={page}
-            total={total}
-            limit={limit}
-            onPageChange={(p) => setParams({ page: String(p) })}
-          />
-        </div>
-      )}
     </main>
   )
 }

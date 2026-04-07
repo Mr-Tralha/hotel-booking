@@ -6,6 +6,7 @@ import {
   Review,
   HotelSearchParams,
   PaginatedResponse,
+  Amenity,
 } from '@/types/mock-db'
 
 import { normalizeText } from './utils'
@@ -70,6 +71,14 @@ export function getHotels(filters: HotelSearchParams): PaginatedResponse<Hotel> 
   if (filters.propertyType) {
     const types = filters.propertyType.split(',') as Hotel['propertyType'][]
     results = results.filter((hotel) => types.includes(hotel.propertyType))
+  }
+
+  // Filter by amenities (comma-separated; hotel must have ALL selected amenities)
+  if (filters.amenities) {
+    const required = filters.amenities.split(',') as Amenity[]
+    results = results.filter((hotel) =>
+      required.every((a) => (hotel.amenities as Amenity[]).includes(a))
+    )
   }
 
   // Filter by featured

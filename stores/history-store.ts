@@ -1,11 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Amenity } from '@/types/mock-db'
 
 export interface RecentHotel {
   id: number
   name: string
   destination: string
   thumbnail: string
+  rating: number
+  reviewCount: number
+  pricePerNight: number
+  propertyType: 'hotel' | 'pousada' | 'resort'
+  amenities: Amenity[]
+  cancellationPolicy: 'free' | 'moderate' | 'strict'
+  availableRooms: number
   /** Full query string that was active when viewing this hotel */
   queryString: string
   visitedAt: string

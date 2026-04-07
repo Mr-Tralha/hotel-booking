@@ -29,6 +29,9 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
   const hasDates = checkIn !== '' && checkOut !== ''
   const isSingle = selectedRooms.length === 1
   const isMultiple = selectedRooms.length > 1
+  const roomsSelected = selectedRooms.length
+  const roomsStillNeeded = Math.max(0, roomsCount - roomsSelected)
+  const hasEnoughRooms = roomsSelected >= roomsCount
 
   const nights = hasDates
     ? calculateNights(new Date(checkIn), new Date(checkOut))
@@ -140,8 +143,19 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
               </div>
             )}
 
-            <Button onClick={handleCheckout} className="w-full" size="md">
-              Ir para checkout
+            {roomsCount > 1 && !hasEnoughRooms && (
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                Selecione mais {roomsStillNeeded} {roomsStillNeeded === 1 ? 'quarto' : 'quartos'} para completar sua reserva.
+              </p>
+            )}
+
+            <Button
+              onClick={handleCheckout}
+              className="w-full"
+              size="md"
+              disabled={!hasEnoughRooms}
+            >
+              {hasEnoughRooms ? 'Ir para checkout' : `Selecione ${roomsStillNeeded} ${roomsStillNeeded === 1 ? 'quarto' : 'quartos'}`}
             </Button>
           </div>
         ) : (

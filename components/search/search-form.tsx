@@ -8,6 +8,8 @@ import { searchSchema, type SearchFormData } from '@/lib/validations/search'
 import { useBookingStore } from '@/stores/booking-store'
 import { useHistoryStore } from '@/stores/history-store'
 import { cn } from '@/lib/utils'
+import { AMENITY_LABELS } from '@/lib/labels'
+import type { Amenity } from '@/types/mock-db'
 import { DestinationAutocomplete } from './destination-autocomplete'
 import { DateRangePicker } from './date-range-picker'
 import { GuestSelector } from './guest-selector'
@@ -26,6 +28,18 @@ const RATING_OPTIONS = [
   { value: '4.5', label: '4.5+' },
 ]
 
+const SORT_OPTIONS = [
+  { value: '', label: 'Relevância' },
+  { value: 'price_asc', label: 'Menor preço' },
+  { value: 'rating_desc', label: 'Melhor avaliação' },
+  { value: 'popular', label: 'Mais popular' },
+]
+
+const FILTER_AMENITIES: Amenity[] = [
+  'wifi', 'pool', 'parking', 'gym', 'restaurant', 'spa',
+  'bar', 'breakfast', 'room_service', 'beach_access',
+]
+
 const PRICE_MIN = 0
 const PRICE_MAX = 2000
 const PRICE_STEP = 50
@@ -42,21 +56,24 @@ interface SearchFormProps {
     priceMax?: string
     ratingMin?: string
     propertyType?: string
+    amenities?: string
     sort?: string
   }
+  onAfterSubmit?: () => void
 }
 
-export function SearchForm({ defaultValues }: SearchFormProps) {
+export function SearchForm({ defaultValues, onAfterSubmit }: SearchFormProps) {
   const router = useRouter()
   const setSearchParams = useBookingStore((s) => s.setSearchParams)
   const addRecentSearch = useHistoryStore((s) => s.addRecentSearch)
   const [showFilters, setShowFilters] = useState(
-    !!(defaultValues?.priceMin || defaultValues?.priceMax || defaultValues?.ratingMin || defaultValues?.propertyType)
+    !!(defaultValues?.priceMin || defaultValues?.priceMax || defaultValues?.ratingMin || defaultValues?.propertyType || defaultValues?.amenities)
   )
   const [priceMin, setPriceMin] = useState(defaultValues?.priceMin ?? '')
   const [priceMax, setPriceMax] = useState(defaultValues?.priceMax ?? '')
   const [ratingMin, setRatingMin] = useState(defaultValues?.ratingMin ?? '')
   const [propertyType, setPropertyType] = useState(defaultValues?.propertyType ?? '')
+  const [amenities, setAmenities] = useState(defaultValues?.amenities ?? '')
   const [sort, setSort] = useState(defaultValues?.sort ?? '')
 
   const {
@@ -97,6 +114,7 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
     if (priceMax) params.set('priceMax', priceMax)
     if (ratingMin) params.set('ratingMin', ratingMin)
     if (propertyType) params.set('propertyType', propertyType)
+    if (amenities) params.set('amenities', amenities)
     if (sort) params.set('sort', sort)
 
     // Save search to history
@@ -105,6 +123,7 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
     if (priceMax) filterParts.push(`priceMax=${priceMax}`)
     if (ratingMin) filterParts.push(`ratingMin=${ratingMin}`)
     if (propertyType) filterParts.push(`propertyType=${propertyType}`)
+    if (amenities) filterParts.push(`amenities=${amenities}`)
     if (sort) filterParts.push(`sort=${sort}`)
 
     addRecentSearch({
@@ -118,10 +137,12 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
       searchedAt: new Date().toISOString(),
     })
 
+    setShowFilters(false)
     router.push(`/search?${params.toString()}`)
+    onAfterSubmit?.()
   }
 
-  const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType)
+  const hasActiveFilters = !!(priceMin || priceMax || ratingMin || propertyType || amenities)
 
   return (
     <form
@@ -202,7 +223,7 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
         Mais filtros
         {hasActiveFilters && (
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
-            {[priceMin, priceMax, ratingMin, propertyType].filter(Boolean).length}
+            {[priceMin, priceMax, ratingMin, propertyType, amenities].filter(Boolean).length}
           </span>
         )}
         <svg
@@ -333,21 +354,57 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
             </div>
           </fieldset>
 
+          {/* Comodidades — multi-select */}
+          {(() => {
+            const selectedAmenities = amenities ? amenities.split(',') : []
+            return (
+              <fieldset className="flex flex-col gap-1.5">
+                <legend className="text-sm font-medium text-gray-700">
+                  Comodidades
+                </legend>
+                <div className="flex flex-wrap gap-1.5">
+                  {FILTER_AMENITIES.map((amenity) => {
+                    const checked = selectedAmenities.includes(amenity)
+                    return (
+                      <Button
+                        key={amenity}
+                        type="button"
+                        variant={checked ? 'primary' : 'secondary'}
+                        size="sm"
+                        onClick={() => {
+                          const next = checked
+                            ? selectedAmenities.filter((a) => a !== amenity)
+                            : [...selectedAmenities, amenity]
+                          setAmenities(next.join(','))
+                        }}
+                      >
+                        {AMENITY_LABELS[amenity]}
+                      </Button>
+                    )
+                  })}
+                </div>
+              </fieldset>
+            )
+          })()}
+
           {/* Ordenação */}
           <fieldset className="flex flex-col gap-1.5">
             <legend className="text-sm font-medium text-gray-700">
               Ordenar por
             </legend>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              <option value="">Relevância</option>
-              <option value="price_asc">Menor preço</option>
-              <option value="price_desc">Maior preço</option>
-              <option value="rating_desc">Melhor avaliação</option>
-            </select>
+            <div className="flex flex-wrap gap-1.5">
+              {SORT_OPTIONS.map((opt) => (
+                <Button
+                  key={opt.value}
+                  type="button"
+                  variant={sort === opt.value ? 'primary' : 'secondary'}
+                  size="sm"
+                  onClick={() => setSort(opt.value)}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
           </fieldset>
 
           {hasActiveFilters && (
@@ -358,6 +415,7 @@ export function SearchForm({ defaultValues }: SearchFormProps) {
                 setPriceMax('')
                 setRatingMin('')
                 setPropertyType('')
+                setAmenities('')
               }}
               className="self-start text-xs font-medium text-blue-600 hover:text-blue-700"
             >

@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       : undefined,
     rating_gte: sp.has('rating_gte') ? Number(sp.get('rating_gte')) : undefined,
     propertyType: (sp.get('propertyType') as HotelSearchParams['propertyType']) ?? undefined,
+    amenities: sp.get('amenities') ?? undefined,
     featured: sp.has('featured') ? sp.get('featured') === 'true' : undefined,
     _sort: (sp.get('_sort') as HotelSearchParams['_sort']) ?? undefined,
     _order: (sp.get('_order') as HotelSearchParams['_order']) ?? undefined,

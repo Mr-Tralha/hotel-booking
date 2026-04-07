@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useHistoryStore, type RecentSearch, type RecentHotel } from '@/stores/history-store'
+import { useHistoryStore, type RecentSearch } from '@/stores/history-store'
+import { HotelCard } from '@/components/hotels/hotel-card'
 import { formatDate } from '@/lib/utils'
 
 export function RecentSearches() {
@@ -29,64 +30,88 @@ export function RecentSearches() {
     router.push(`/search?${params.toString()}`)
   }
 
-  function navigateToHotel(hotel: RecentHotel) {
-    const url = `/hotel/${hotel.id}${hotel.queryString ? `?${hotel.queryString}` : ''}`
-    router.push(url)
-  }
+  const hasSearches = recentSearches.length > 0
+  const hasHotels = recentHotels.length > 0
+  const showSubtitles = hasSearches && hasHotels
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-8">
-      <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-        Últimas pesquisas
-      </h2>
-      <p className="mt-1 text-sm text-gray-500">
-        Retome de onde parou
-      </p>
+    <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
+      {hasSearches && (
+        <div>
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
+              {showSubtitles ? 'Pesquisas recentes' : 'Últimas pesquisas'}
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">Retome de onde parou</p>
+          </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {recentSearches.map((search, i) => (
-          <button
-            key={`search-${i}`}
-            type="button"
-            onClick={() => navigateToSearch(search)}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-gray-300 hover:shadow-md cursor-pointer"
-          >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50">
-              <SearchIcon />
-            </div>
-            <div className="min-w-0">
-              <p className="font-medium text-gray-900 truncate">
-                {search.destination}
-              </p>
-              <p className="text-xs text-gray-500">
-                {formatDate(new Date(search.checkIn))} → {formatDate(new Date(search.checkOut))}
-                {' · '}
-                {search.adults} {search.adults === 1 ? 'adulto' : 'adultos'}
-                {search.children > 0 && `, ${search.children} crianças`}
-              </p>
-            </div>
-          </button>
-        ))}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {recentSearches.slice(0, 4).map((search, i) => (
+              <button
+                key={`search-${i}`}
+                type="button"
+                onClick={() => navigateToSearch(search)}
+                className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow-md cursor-pointer"
+              >
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                  <SearchIcon />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-gray-900 truncate text-sm leading-tight">
+                    {search.destination}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-snug">
+                    {formatDate(new Date(search.checkIn))} → {formatDate(new Date(search.checkOut))}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {search.adults} {search.adults === 1 ? 'adulto' : 'adultos'}
+                    {search.children > 0 && `, ${search.children} crianças`}
+                    {' · '}{search.rooms} {search.rooms === 1 ? 'quarto' : 'quartos'}
+                  </p>
+                </div>
+                <ArrowIcon />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-        {recentHotels.map((hotel) => (
-          <button
-            key={`hotel-${hotel.id}`}
-            type="button"
-            onClick={() => navigateToHotel(hotel)}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-gray-300 hover:shadow-md cursor-pointer"
-          >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50">
-              <HotelIcon />
-            </div>
-            <div className="min-w-0">
-              <p className="font-medium text-gray-900 truncate">
-                {hotel.name}
-              </p>
-              <p className="text-xs text-gray-500">{hotel.destination}</p>
-            </div>
-          </button>
-        ))}
-      </div>
+      {hasHotels && (
+        <div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {recentHotels.slice(0, 6).map((hotel) => (
+              <HotelCard
+                key={`hotel-${hotel.id}`}
+                hotel={{
+                  id: hotel.id,
+                  name: hotel.name,
+                  destination: hotel.destination,
+                  thumbnail: hotel.thumbnail,
+                  rating: hotel.rating,
+                  reviewCount: hotel.reviewCount,
+                  pricePerNight: hotel.pricePerNight,
+                  propertyType: hotel.propertyType,
+                  amenities: hotel.amenities,
+                  cancellationPolicy: hotel.cancellationPolicy,
+                  availableRooms: hotel.availableRooms,
+                  slug: '',
+                  description: '',
+                  currency: 'BRL',
+                  address: '',
+                  latitude: 0,
+                  longitude: 0,
+                  images: [],
+                  checkInTime: '',
+                  checkOutTime: '',
+                  featured: false,
+                }}
+                hrefOverride={`/hotel/${hotel.id}${hotel.queryString ? `?${hotel.queryString}` : ''}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
@@ -99,11 +124,11 @@ function SearchIcon() {
   )
 }
 
-function HotelIcon() {
+function ArrowIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600" aria-hidden="true">
-      <path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" />
-      <path d="M9 9h1" /><path d="M9 13h1" /><path d="M9 17h1" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-gray-300 group-hover:text-blue-400 transition-colors" aria-hidden="true">
+      <path d="M9 18l6-6-6-6" />
     </svg>
   )
 }
+

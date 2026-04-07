@@ -9,9 +9,10 @@ import type { Hotel } from '@/types/mock-db'
 
 interface HotelCardProps {
   hotel: Hotel
+  hrefOverride?: string
 }
 
-export function HotelCard({ hotel }: HotelCardProps) {
+export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
   const searchParams = useSearchParams()
 
   const FORWARDED_PARAMS = ['checkIn', 'checkOut', 'adults', 'children', 'rooms'] as const
@@ -20,10 +21,10 @@ export function HotelCard({ hotel }: HotelCardProps) {
     const val = searchParams.get(key)
     if (val) query.set(key, val)
   }
-  const href = `/hotel/${hotel.id}${query.size ? `?${query}` : ''}`
+  const href = hrefOverride ?? `/hotel/${hotel.id}${query.size ? `?${query}` : ''}`
 
-  const displayAmenities = hotel.amenities.slice(0, 4)
-  const extraCount = hotel.amenities.length - displayAmenities.length
+  const displayAmenities = (hotel.amenities ?? []).slice(0, 4)
+  const extraCount = (hotel.amenities?.length ?? 0) - displayAmenities.length
 
   return (
     <Link
@@ -42,7 +43,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
         <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-xs font-medium text-gray-700 backdrop-blur-sm">
           {PROPERTY_TYPE_LABELS[hotel.propertyType]}
         </span>
-        {hotel.availableRooms <= 3 && (
+        {hotel.availableRooms != null && hotel.availableRooms <= 3 && (
           <span className="absolute right-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
             {hotel.availableRooms === 1
               ? 'Último quarto!'
@@ -65,10 +66,10 @@ export function HotelCard({ hotel }: HotelCardProps) {
         <div className="flex items-center gap-1.5">
           <span className="flex items-center gap-0.5 rounded-md bg-blue-50 px-1.5 py-0.5 text-xs font-semibold text-blue-700">
             <StarIcon />
-            {hotel.rating.toFixed(1)}
+            {(hotel.rating ?? 0).toFixed(1)}
           </span>
           <span className="text-xs text-gray-400">
-            ({hotel.reviewCount.toLocaleString('pt-BR')} avaliações)
+            ({(hotel.reviewCount ?? 0).toLocaleString('pt-BR')} avaliações)
           </span>
         </div>
 
@@ -93,7 +94,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
         <div className="mt-auto flex items-end justify-between pt-2 border-t border-gray-100">
           <div>
             <span className="text-lg font-bold text-gray-900">
-              {formatCurrency(hotel.pricePerNight)}
+              {formatCurrency(hotel.pricePerNight ?? 0)}
             </span>
             <span className="text-xs text-gray-500"> /noite</span>
           </div>

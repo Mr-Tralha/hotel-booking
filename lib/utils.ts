@@ -60,3 +60,25 @@ export function normalizeText(text: string) {
     .toLowerCase()
     .replace(/[^\w\s]/g, '') // remove caracteres especiais
 }
+
+/**
+ * Formata string de CPF progressivamente (xxx.xxx.xxx-xx)
+ */
+export function formatCPF(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+  if (digits.length <= 9)
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
+}
+
+/**
+ * Formata string de telefone brasileiro progressivamente ((xx) xxxxx-xxxx)
+ */
+export function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 2) return digits.length ? `(${digits}` : ''
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+}

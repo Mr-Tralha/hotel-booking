@@ -117,11 +117,11 @@ export function ReviewStep({
       {/* Personal data summary */}
       <section className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-2">
         <h3 className="text-sm font-semibold text-gray-700">{t('personalDataSection')}</h3>
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm [&_dd]:min-w-0">
           <dt className="text-gray-500">{t('nameLabel')}</dt>
-          <dd className="text-gray-900">{personalData.fullName}</dd>
+          <dd className="truncate text-gray-900">{personalData.fullName}</dd>
           <dt className="text-gray-500">{t('emailLabel')}</dt>
-          <dd className="text-gray-900">{personalData.email}</dd>
+          <dd className="truncate text-gray-900" title={personalData.email}>{personalData.email}</dd>
           <dt className="text-gray-500">{t('phoneLabel')}</dt>
           <dd className="text-gray-900">{personalData.phone}</dd>
           <dt className="text-gray-500">{t('cpfLabel')}</dt>

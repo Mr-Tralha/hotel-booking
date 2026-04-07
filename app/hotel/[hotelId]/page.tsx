@@ -1,17 +1,80 @@
 'use client'
 
-import { use, Suspense } from 'react'
+import { use, useEffect, useRef, Suspense } from 'react'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useHotel } from '@/hooks/queries/use-hotel'
+import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
 import { Breadcrumb } from '@/components/hotel/breadcrumb'
 import { HotelGallery } from '@/components/hotel/hotel-gallery'
 import { HotelInfo } from '@/components/hotel/hotel-info'
 import { RoomList } from '@/components/hotel/room-list'
 import { HotelReviews } from '@/components/hotel/hotel-reviews'
 import { HotelDetailSkeleton } from '@/components/hotel/hotel-detail-skeleton'
-import { ShareButton } from '@/components/hotel/share-button'
 import { SectionNav } from '@/components/hotel/section-nav'
+import { BookingSummary } from '@/components/hotel/booking-summary'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+
+/**
+ * Syncs selected rooms between URL (source of truth) and Zustand store.
+ * - On mount: hydrates store from URL `rooms` param
+ * - On store change: updates URL `rooms` param with debounce
+ */
+function useRoomUrlSync(hotelRooms: { id: number; name: string; pricePerNight: number }[]) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const selectedRooms = useBookingStore((s) => s.selectedRooms)
+  const setSelectedRooms = useBookingStore((s) => s.setSelectedRooms)
+  const hydrated = useRef(false)
+
+  // Hydrate store from URL on mount
+  useEffect(() => {
+    const roomsParam = searchParams.get('rooms')
+    if (!roomsParam) {
+      hydrated.current = true
+      return
+    }
+
+    const ids = roomsParam
+      .split(',')
+      .map(Number)
+      .filter((n) => !Number.isNaN(n) && n > 0)
+
+    const rooms: SelectedRoom[] = ids
+      .map((id) => hotelRooms.find((r) => r.id === id))
+      .filter((r): r is SelectedRoom => r != null)
+
+    if (rooms.length > 0) {
+      setSelectedRooms(rooms)
+    }
+    hydrated.current = true
+    // Run only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Sync store → URL (debounced)
+  useEffect(() => {
+    if (!hydrated.current) return
+
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (selectedRooms.length > 0) {
+        params.set('rooms', selectedRooms.map((r) => r.id).join(','))
+      } else {
+        params.delete('rooms')
+      }
+
+      const newUrl = `${pathname}?${params.toString()}`
+      const currentUrl = `${pathname}?${searchParams.toString()}`
+      if (newUrl !== currentUrl) {
+        router.replace(newUrl, { scroll: false })
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [selectedRooms, searchParams, router, pathname])
+}
 
 function HotelDetailContent({ hotelId }: { hotelId: number }) {
   const { data: hotel, isLoading, error } = useHotel(hotelId)
@@ -31,6 +94,15 @@ function HotelDetailContent({ hotelId }: { hotelId: number }) {
       </div>
     )
   }
+
+  return <HotelDetailLoaded hotel={hotel} />
+}
+
+function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof useHotel>['data']> }) {
+  // Sync rooms between URL ↔ store
+  useRoomUrlSync(
+    hotel.rooms.map((r) => ({ id: r.id, name: r.name, pricePerNight: r.pricePerNight }))
+  )
 
   return (
     <>
@@ -68,39 +140,7 @@ function HotelDetailContent({ hotelId }: { hotelId: number }) {
           </div>
 
           {/* Sidebar */}
-          <aside className="space-y-4">
-            {/* Quick book card */}
-            <div className="sticky top-16 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
-              <div>
-                <span className="text-sm text-gray-500">A partir de</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-gray-900">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(hotel.pricePerNight)}
-                  </span>
-                  <span className="text-sm text-gray-500">/noite</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-bold text-blue-700">
-                  <StarIcon />
-                  {hotel.rating.toFixed(1)}
-                </span>
-                <span className="text-xs text-gray-400">
-                  {hotel.reviewCount.toLocaleString('pt-BR')} avaliações
-                </span>
-              </div>
-
-              <a
-                href="#quartos"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-              >
-                Ver quartos disponíveis
-              </a>
-
-              <ShareButton hotelName={hotel.name} />
-            </div>
-          </aside>
+          <BookingSummary hotel={hotel} />
         </div>
       </div>
     </>
@@ -125,14 +165,6 @@ function ReviewsSkeleton() {
         </div>
       ))}
     </div>
-  )
-}
-
-function StarIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
   )
 }
 

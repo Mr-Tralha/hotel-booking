@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils'
 import { ROOM_AMENITY_LABELS, BED_TYPE_LABELS } from '@/lib/labels'
 import { useBookingStore } from '@/stores/booking-store'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { Hotel, Room } from '@/types/mock-db'
 
 interface RoomListProps {
@@ -29,12 +29,17 @@ export function RoomList({ hotel, rooms }: RoomListProps) {
 }
 
 function RoomCard({ hotel, room }: { hotel: Hotel; room: Room }) {
-  const router = useRouter()
-  const selectRoom = useBookingStore((s) => s.selectRoom)
+  const selectedRooms = useBookingStore((s) => s.selectedRooms)
+  const toggleRoom = useBookingStore((s) => s.toggleRoom)
 
-  function handleSelect() {
-    selectRoom(hotel, room)
-    router.push('/checkout')
+  const isSelected = selectedRooms.some((r) => r.id === room.id)
+
+  function handleToggle() {
+    toggleRoom({
+      id: room.id,
+      name: room.name,
+      pricePerNight: room.pricePerNight,
+    })
   }
 
   const bedsDescription = room.beds
@@ -42,7 +47,12 @@ function RoomCard({ hotel, room }: { hotel: Hotel; room: Room }) {
     .join(' + ')
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:flex-row">
+    <div className={cn(
+      'flex flex-col overflow-hidden rounded-xl border shadow-sm transition-colors sm:flex-row',
+      isSelected
+        ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500'
+        : 'border-gray-200 bg-white'
+    )}>
       {/* Room image */}
       {room.images[0] && (
         <div className="relative aspect-[16/10] w-full flex-shrink-0 bg-gray-100 sm:aspect-auto sm:w-64">
@@ -116,11 +126,17 @@ function RoomCard({ hotel, room }: { hotel: Hotel; room: Room }) {
             )}
 
             <Button
-              onClick={handleSelect}
+              onClick={handleToggle}
               disabled={room.available === 0}
+              variant={isSelected ? 'secondary' : 'primary'}
               size="md"
+              className={isSelected ? 'border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100' : undefined}
             >
-              {room.available === 0 ? 'Indisponível' : 'Selecionar'}
+              {room.available === 0
+                ? 'Indisponível'
+                : isSelected
+                  ? '✓ Selecionado'
+                  : 'Selecionar'}
             </Button>
           </div>
         </div>

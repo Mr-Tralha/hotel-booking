@@ -60,13 +60,9 @@ function SearchResults() {
               ? `Hotéis em ${destination}`
               : 'Resultados da busca'}
           </h1>
-          {!isLoading && data && (
+          {data && (
             <p className="mt-0.5 text-sm text-gray-500">
-              {total === 0
-                ? 'Nenhum hotel encontrado'
-                : total === 1
-                  ? '1 hotel encontrado'
-                  : `${total} hotéis encontrados`}
+              {isLoading ? 'Carregando...' : total === 0 ? 'Nenhum hotel encontrado' : total === 1 ? '1 hotel encontrado' : `${total} hotéis encontrados`}
             </p>
           )}
         </div>

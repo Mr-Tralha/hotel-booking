@@ -5,8 +5,10 @@ import { useHotels } from '@/hooks/queries/use-hotels'
 import { useSearchFilters } from '@/hooks/use-search-filters'
 import { NAVBAR_HEIGHT_PX } from '@/lib/constants'
 import { SearchForm } from '@/components/search/search-form'
+import { SearchFormSkeleton } from '@/components/search/search-form-skeleton'
 import { SearchFilters } from '@/components/search/search-filters'
 import { HotelList } from '@/components/hotels/hotel-list'
+import { HotelCardSkeleton } from '@/components/hotels/hotel-card-skeleton'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 import { Pagination } from '@/components/ui/pagination'
 
@@ -122,28 +124,7 @@ export default function SearchPage() {
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
           {/* Search form skeleton */}
           <div className="mb-8">
-            <div className="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-lg sm:p-6 md:gap-5">
-              {/* Destination */}
-              <div className="flex flex-col gap-1">
-                <div className="h-4 w-14 animate-pulse rounded bg-gray-200" />
-                <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
-              </div>
-              {/* Dates */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
-                  <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-                  <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
-                </div>
-              </div>
-              {/* Guests */}
-              <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
-              {/* Submit button */}
-              <div className="h-11 w-full animate-pulse rounded-lg bg-blue-200" />
-            </div>
+            <SearchFormSkeleton />
           </div>
           {/* Results header */}
           <div className="mb-4">
@@ -153,25 +134,7 @@ export default function SearchPage() {
           {/* Hotel grid skeleton */}
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }, (_, i) => (
-              <div key={i} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="aspect-[16/10] w-full animate-pulse bg-gray-200" />
-                <div className="flex flex-1 flex-col gap-3 p-4">
-                  <div className="space-y-2">
-                    <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
-                    <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200" />
-                  </div>
-                  <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
-                  <div className="flex gap-1.5">
-                    <div className="h-5 w-14 animate-pulse rounded-full bg-gray-200" />
-                    <div className="h-5 w-16 animate-pulse rounded-full bg-gray-200" />
-                    <div className="h-5 w-10 animate-pulse rounded-full bg-gray-200" />
-                  </div>
-                  <div className="mt-auto flex items-end justify-between border-t border-gray-100 pt-2">
-                    <div className="h-6 w-28 animate-pulse rounded bg-gray-200" />
-                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
-                  </div>
-                </div>
-              </div>
+              <HotelCardSkeleton key={i} />
             ))}
           </div>
         </div>

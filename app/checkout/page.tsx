@@ -12,8 +12,8 @@ function CheckoutContent() {
   const [ready, setReady] = useState(false)
 
   const roomsParam = searchParams.get('rooms') ?? ''
-  const checkin = searchParams.get('checkin') ?? ''
-  const checkout = searchParams.get('checkout') ?? ''
+  const checkin = searchParams.get('checkIn') ?? ''
+  const checkout = searchParams.get('checkOut') ?? ''
   const destination = searchParams.get('destination') ?? ''
 
   // Parse room IDs from URL — names/prices will be shown from the URL

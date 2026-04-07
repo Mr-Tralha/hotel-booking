@@ -16,14 +16,17 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
   const searchParams = useSearchParams()
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
 
-  const checkin = searchParams.get('checkin') ?? ''
-  const checkout = searchParams.get('checkout') ?? ''
+  // URL uses camelCase (checkIn/checkOut) — must match use-search-filters
+  const checkIn = searchParams.get('checkIn') ?? ''
+  const checkOut = searchParams.get('checkOut') ?? ''
 
   const hasRooms = selectedRooms.length > 0
-  const hasDates = checkin !== '' && checkout !== ''
+  const hasDates = checkIn !== '' && checkOut !== ''
+  const isSingle = selectedRooms.length === 1
+  const isMultiple = selectedRooms.length > 1
 
   const nights = hasDates
-    ? calculateNights(new Date(checkin), new Date(checkout))
+    ? calculateNights(new Date(checkIn), new Date(checkOut))
     : 0
 
   const total = hasRooms && nights > 0
@@ -32,7 +35,6 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
 
   function handleCheckout() {
     const params = new URLSearchParams(searchParams.toString())
-    // Ensure rooms param is current
     params.set('rooms', selectedRooms.map((r) => r.id).join(','))
     router.push(`/checkout?${params.toString()}`)
   }
@@ -40,87 +42,104 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
   return (
     <aside className="space-y-4">
       <div className="sticky top-16 rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
-        {/* Base price */}
-        <div>
-          <span className="text-sm text-gray-500">A partir de</span>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-gray-900">
-              {formatCurrency(hotel.pricePerNight)}
+        {/* Rating + Share — always visible, same row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-bold text-blue-700">
+              <StarIcon />
+              {hotel.rating.toFixed(1)}
             </span>
-            <span className="text-sm text-gray-500">/noite</span>
+            <span className="text-xs text-gray-400">
+              {hotel.reviewCount.toLocaleString('pt-BR')} avaliações
+            </span>
           </div>
+          <ShareButton hotelName={hotel.name} />
         </div>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-bold text-blue-700">
-            <StarIcon />
-            {hotel.rating.toFixed(1)}
-          </span>
-          <span className="text-xs text-gray-400">
-            {hotel.reviewCount.toLocaleString('pt-BR')} avaliações
-          </span>
-        </div>
-
-        {/* Selection summary OR CTA */}
         {hasRooms ? (
           <div className="space-y-3">
-            {/* Badge */}
-            <div className="rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">
-              {selectedRooms.length} {selectedRooms.length === 1 ? 'quarto selecionado' : 'quartos selecionados'}
-            </div>
+            {/* Single room */}
+            {isSingle && (
+              <div>
+                <span className="text-sm text-gray-500">{selectedRooms[0].name}</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(selectedRooms[0].pricePerNight)}
+                  </span>
+                  <span className="text-sm text-gray-500">/noite</span>
+                </div>
+              </div>
+            )}
 
-            {/* Room list */}
-            <ul className="space-y-1 text-sm text-gray-700">
-              {selectedRooms.map((room) => (
-                <li key={room.id} className="flex items-center justify-between">
-                  <span className="truncate pr-2">{room.name}</span>
-                  <span className="flex-shrink-0 font-medium">{formatCurrency(room.pricePerNight)}/n</span>
+            {/* Multiple rooms */}
+            {isMultiple && (
+              <>
+                <div className="rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">
+                  {selectedRooms.length} quartos selecionados
+                </div>
+                <ul className="space-y-1.5 text-sm">
+                  {selectedRooms.map((room) => (
+                    <li key={room.id} className="flex items-center justify-between text-gray-600">
+                      <span className="truncate pr-2">{room.name}</span>
+                      <span className="flex-shrink-0 font-medium text-gray-900">
+                        {formatCurrency(room.pricePerNight)}
+                        <span className="text-xs font-normal text-gray-400">/noite</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <li className="flex items-center justify-between text-gray-600">
+                  <span className="truncate pr-2">Valor Total</span>
+                  <span className="flex text-2xl -shrink-0 font-bold text-gray-900">
+                    {formatCurrency(total)}
+                  </span>
                 </li>
-              ))}
-            </ul>
+              </>
+            )}
 
-            {/* Dates and nights */}
+            {/* Date range */}
             {hasDates && nights > 0 && (
-              <div className="space-y-1 border-t border-gray-100 pt-3 text-sm text-gray-600">
-                <div className="flex justify-between">
-                  <span>Check-in</span>
-                  <span className="font-medium text-gray-900">{formatDate(new Date(checkin))}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Check-out</span>
-                  <span className="font-medium text-gray-900">{formatDate(new Date(checkout))}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Noites</span>
-                  <span className="font-medium text-gray-900">{nights}</span>
-                </div>
+              <div className="rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600 border border-gray-100">
+                <span className="font-medium text-gray-900">{formatDate(new Date(checkIn))}</span>
+                {' → '}
+                <span className="font-medium text-gray-900">{formatDate(new Date(checkOut))}</span>
+                <span className="ml-1 text-gray-400">({nights} {nights === 1 ? 'noite' : 'noites'})</span>
               </div>
             )}
 
             {/* Total */}
             {total > 0 && (
-              <div className="flex items-baseline justify-between border-t border-gray-100 pt-3">
+              <div className="flex items-baseline justify-between border-t border-gray-200 pt-3">
                 <span className="text-sm font-medium text-gray-700">Total</span>
-                <span className="text-xl font-bold text-gray-900">{formatCurrency(total)}</span>
+                <span className="text-2xl font-bold text-gray-900">{formatCurrency(total)}</span>
               </div>
             )}
 
-            {/* Checkout button */}
             <Button onClick={handleCheckout} className="w-full" size="md">
               Ir para checkout
             </Button>
           </div>
         ) : (
-          <a
-            href="#quartos"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-          >
-            Ver quartos disponíveis
-          </a>
-        )}
+          <>
+            {/* Base price — only when no room selected */}
+            <div>
+              <span className="text-sm text-gray-500">A partir de</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(hotel.pricePerNight)}
+                </span>
+                <span className="text-sm text-gray-500">/noite</span>
+              </div>
+            </div>
 
-        <ShareButton hotelName={hotel.name} />
+            <a
+              href="#quartos"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+            >
+              Ver quartos disponíveis
+            </a>
+          </>
+        )}
       </div>
     </aside>
   )

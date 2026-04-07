@@ -14,6 +14,7 @@ import { SectionNav } from '@/components/hotel/section-nav'
 import { BookingSummary } from '@/components/hotel/booking-summary'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { FeaturedHotels } from '@/components/hotels/featured-hotels'
 
 /**
  * Syncs selected rooms between URL (source of truth) and Zustand store.
@@ -106,7 +107,7 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
 
   return (
     <>
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8" id="sobre">
         {/* Breadcrumb */}
         <Breadcrumb hotelName={hotel.name} destination={hotel.destination} />
 
@@ -122,7 +123,7 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
           {/* Main content */}
           <div className="lg:col-span-2 space-y-10">
             {/* Hotel info */}
-            <section id="sobre">
+            <section >
               <HotelInfo hotel={hotel} />
             </section>
 
@@ -137,9 +138,20 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
                 <HotelReviews hotelId={hotel.id} />
               </Suspense>
             )}
+
+            <FeaturedHotels />
           </div>
 
           {/* Sidebar */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24">
+              <BookingSummary hotel={hotel} />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile sticky bottom */}
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white/95 p-4 backdrop-blur lg:hidden">
           <BookingSummary hotel={hotel} />
         </div>
       </div>

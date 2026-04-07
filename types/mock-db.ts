@@ -83,6 +83,7 @@ export type Amenity =
   | 'concierge'
   | 'valet'
   | 'lounge_access'
+  | 'breakfast'
 
 export type RoomAmenity =
   | 'ocean_view'

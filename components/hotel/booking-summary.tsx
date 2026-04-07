@@ -130,25 +130,12 @@ export function BookingSummary({ hotel }: BookingSummaryProps) {
             </Button>
           </div>
         ) : (
-          <>
-            {/* Base price — only when no room selected */}
-            <div>
-              <span className="text-sm text-gray-500">A partir de</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(hotel.pricePerNight)}
-                </span>
-                <span className="text-sm text-gray-500">/noite</span>
-              </div>
-            </div>
-
-            <a
-              href="#quartos"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-            >
-              Ver quartos disponíveis
-            </a>
-          </>
+          <a
+            href="#quartos"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          >
+            Ver quartos disponíveis
+          </a>
         )}
       </div>
     </aside>

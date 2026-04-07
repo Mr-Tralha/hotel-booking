@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +7,7 @@ import { z } from 'zod'
 import { DateRangePicker } from '@/components/search/date-range-picker'
 import { GuestSelector } from '@/components/search/guest-selector'
 import { Button } from '@/components/ui/button'
+import { BaseModal } from '@/components/ui/base-modal'
 import { useBookingStore } from '@/stores/booking-store'
 
 const datesGuestsSchema = z
@@ -72,21 +72,6 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
     },
   })
 
-  // Close on Escape
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
-
-  // Prevent body scroll while open
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
-
   function onCancel() {
     router.back()
   }
@@ -112,11 +97,11 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Informar datas e hóspedes"
+    <BaseModal
+      isOpen
+      onClose={onCancel}
+      closeOnBackdropClick={false}
+      ariaLabel="Informar datas e hóspedes"
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         {/* Header */}
@@ -215,6 +200,6 @@ export function SearchParamsModal({ onClose }: SearchParamsModalProps) {
           </div>
         </form>
       </div>
-    </div>
+    </BaseModal>
   )
 }

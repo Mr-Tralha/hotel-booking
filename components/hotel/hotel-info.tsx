@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { formatCurrency } from '@/lib/utils'
 import {
   AMENITY_LABELS,
@@ -8,8 +7,8 @@ import {
   CANCELLATION_LABELS,
   CANCELLATION_DESCRIPTIONS,
 } from '@/lib/labels'
-import { cn } from '@/lib/utils'
-import type { HotelWithRooms, Amenity } from '@/types/mock-db'
+import { AmenitiesDropdown } from '@/components/ui/amenities-dropdown'
+import type { HotelWithRooms } from '@/types/mock-db'
 
 interface HotelInfoProps {
   hotel: HotelWithRooms
@@ -33,7 +32,22 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
           {hotel.name}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">{hotel.address}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <p className="text-sm text-gray-500">{hotel.address}</p>
+          <a
+            href={
+              hotel.latitude && hotel.longitude
+                ? `https://www.google.com/maps?q=${hotel.latitude},${hotel.longitude}`
+                : `https://www.google.com/maps/search/${encodeURIComponent(hotel.address)}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+          >
+            <PinIcon />
+            Ver no mapa
+          </a>
+        </div>
       </div>
 
       {/* Rating */}
@@ -82,7 +96,11 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
       </div>
 
       {/* Amenities — collapsible */}
-      <AmenitiesDropdown amenities={hotel.amenities} />
+      <AmenitiesDropdown
+        amenities={hotel.amenities}
+        labels={AMENITY_LABELS}
+        title="Comodidades do estabelecimento"
+      />
 
       {/* Cancellation policy */}
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
@@ -110,57 +128,6 @@ export function HotelInfo({ hotel }: HotelInfoProps) {
   )
 }
 
-function AmenitiesDropdown({ amenities }: { amenities: Amenity[] }) {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div className="rounded-lg border border-gray-200">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50"
-        aria-expanded={open}
-      >
-        <h2 className="text-lg font-semibold text-gray-900">
-          Comodidades do estabelecimento ({amenities.length})
-        </h2>
-        <svg
-          className={cn(
-            'h-5 w-5 text-gray-500 transition-transform duration-200',
-            open && 'rotate-180'
-          )}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-        </svg>
-      </button>
-      <div
-        className={cn(
-          'grid overflow-hidden transition-all duration-200 ease-in-out',
-          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        )}
-      >
-        <div className="overflow-hidden">
-          <div className="grid grid-cols-2 gap-2 px-4 pb-4 sm:grid-cols-3">
-            {amenities.map((amenity) => (
-              <div
-                key={amenity}
-                className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700"
-              >
-                <AmenityIcon amenity={amenity} />
-                {AMENITY_LABELS[amenity]}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function StarIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -169,11 +136,11 @@ function StarIcon() {
   )
 }
 
-function AmenityIcon({ amenity }: { amenity: Amenity }) {
-  // Simple check icon for all amenities
+function PinIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-blue-500 flex-shrink-0">
-      <path d="M20 6L9 17l-5-5" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z" />
+      <circle cx="12" cy="10" r="3" />
     </svg>
   )
 }

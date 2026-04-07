@@ -23,6 +23,7 @@ export const AMENITY_LABELS: Record<Amenity, string> = {
   concierge: 'Concierge',
   valet: 'Manobrista',
   lounge_access: 'Acesso ao Lounge',
+  breakfast: 'Café da Manhã',
 }
 
 export const ROOM_AMENITY_LABELS: Record<RoomAmenity, string> = {

@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useHistoryStore, type RecentSearch, type RecentHotel } from '@/stores/history-store'
+import { useHistoryStore, type RecentSearch } from '@/stores/history-store'
+import { HotelCard } from '@/components/hotels/hotel-card'
 import { formatDate } from '@/lib/utils'
 
 export function RecentSearches() {
@@ -29,11 +30,6 @@ export function RecentSearches() {
     router.push(`/search?${params.toString()}`)
   }
 
-  function navigateToHotel(hotel: RecentHotel) {
-    const url = `/hotel/${hotel.id}${hotel.queryString ? `?${hotel.queryString}` : ''}`
-    router.push(url)
-  }
-
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8">
       <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
@@ -43,7 +39,7 @@ export function RecentSearches() {
         Retome de onde parou
       </p>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-row mt-4 space-y-4">
         {recentSearches.slice(0, 5).map((search, i) => (
           <button
             key={`search-${i}`}
@@ -67,24 +63,39 @@ export function RecentSearches() {
             </div>
           </button>
         ))}
+      </div>
 
-        {recentHotels.map((hotel) => (
-          <button
+
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {recentHotels.slice(0, 5).map((hotel) => (
+          <HotelCard
             key={`hotel-${hotel.id}`}
-            type="button"
-            onClick={() => navigateToHotel(hotel)}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-gray-300 hover:shadow-md cursor-pointer"
-          >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50">
-              <HotelIcon />
-            </div>
-            <div className="min-w-0">
-              <p className="font-medium text-gray-900 truncate">
-                {hotel.name}
-              </p>
-              <p className="text-xs text-gray-500">{hotel.destination}</p>
-            </div>
-          </button>
+            hotel={{
+              id: hotel.id,
+              name: hotel.name,
+              destination: hotel.destination,
+              thumbnail: hotel.thumbnail,
+              rating: hotel.rating,
+              reviewCount: hotel.reviewCount,
+              pricePerNight: hotel.pricePerNight,
+              propertyType: hotel.propertyType,
+              amenities: hotel.amenities,
+              cancellationPolicy: hotel.cancellationPolicy,
+              availableRooms: hotel.availableRooms,
+              // fields not needed for rendering
+              slug: '',
+              description: '',
+              currency: 'BRL',
+              address: '',
+              latitude: 0,
+              longitude: 0,
+              images: [],
+              checkInTime: '',
+              checkOutTime: '',
+              featured: false,
+            }}
+            hrefOverride={`/hotel/${hotel.id}${hotel.queryString ? `?${hotel.queryString}` : ''}`}
+          />
         ))}
       </div>
     </section>
@@ -99,11 +110,3 @@ function SearchIcon() {
   )
 }
 
-function HotelIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600" aria-hidden="true">
-      <path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" />
-      <path d="M9 9h1" /><path d="M9 13h1" /><path d="M9 17h1" />
-    </svg>
-  )
-}

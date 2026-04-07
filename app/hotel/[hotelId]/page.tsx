@@ -127,6 +127,13 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
       name: hotel.name,
       destination: hotel.destination,
       thumbnail: hotel.thumbnail,
+      rating: hotel.rating,
+      reviewCount: hotel.reviewCount,
+      pricePerNight: hotel.pricePerNight,
+      propertyType: hotel.propertyType,
+      amenities: hotel.amenities,
+      cancellationPolicy: hotel.cancellationPolicy,
+      availableRooms: hotel.availableRooms,
       queryString: searchParams.toString(),
       visitedAt: new Date().toISOString(),
     })

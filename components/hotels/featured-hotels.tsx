@@ -46,6 +46,7 @@ export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
         isLoading={isLoading}
         skeletonCount={6}
         emptyMessage="Nenhum hotel disponível no momento."
+        priorityCount={3}
       />
     </section>
   )

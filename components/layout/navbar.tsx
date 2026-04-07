@@ -54,9 +54,9 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — overlay to prevent CLS */}
       {menuOpen && (
-        <div className="border-t border-gray-100 bg-white sm:hidden">
+        <div className="absolute top-full left-0 right-0 border-t border-gray-100 bg-white shadow-lg sm:hidden">
           <ul className="flex flex-col px-4 py-2">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>

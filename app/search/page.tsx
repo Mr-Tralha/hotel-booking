@@ -87,6 +87,7 @@ function SearchResults() {
             skeletonCount={6}
             emptyMessage="Nenhum hotel encontrado para os filtros selecionados. Tente ajustar os critérios de busca."
             columns={3}
+            priorityCount={3}
           />
 
           {/* Show featured hotels when no results */}
@@ -116,12 +117,59 @@ export default function SearchPage() {
     <Suspense
       fallback={
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
+          {/* Search form skeleton */}
           <div className="mb-8">
-            <div className="h-64 animate-pulse rounded-2xl bg-gray-200" />
+            <div className="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-lg sm:p-6 md:gap-5">
+              {/* Destination */}
+              <div className="flex flex-col gap-1">
+                <div className="h-4 w-14 animate-pulse rounded bg-gray-200" />
+                <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+              </div>
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+                  <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+                  <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+                </div>
+              </div>
+              {/* Guests */}
+              <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
+              {/* Submit button */}
+              <div className="h-11 w-full animate-pulse rounded-lg bg-blue-200" />
+            </div>
           </div>
+          {/* Results header */}
           <div className="mb-4">
             <div className="h-7 w-56 animate-pulse rounded bg-gray-200" />
             <div className="mt-2 h-4 w-36 animate-pulse rounded bg-gray-200" />
+          </div>
+          {/* Hotel grid skeleton */}
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="aspect-[16/10] w-full animate-pulse bg-gray-200" />
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="space-y-2">
+                    <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200" />
+                  </div>
+                  <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
+                  <div className="flex gap-1.5">
+                    <div className="h-5 w-14 animate-pulse rounded-full bg-gray-200" />
+                    <div className="h-5 w-16 animate-pulse rounded-full bg-gray-200" />
+                    <div className="h-5 w-10 animate-pulse rounded-full bg-gray-200" />
+                  </div>
+                  <div className="mt-auto flex items-end justify-between border-t border-gray-100 pt-2">
+                    <div className="h-6 w-28 animate-pulse rounded bg-gray-200" />
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       }

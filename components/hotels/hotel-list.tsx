@@ -10,6 +10,8 @@ interface HotelListProps {
   skeletonCount?: number
   emptyMessage?: string
   columns?: 2 | 3
+  /** Number of initial cards to mark as LCP priority (above the fold) */
+  priorityCount?: number
 }
 
 export function HotelList({
@@ -18,6 +20,7 @@ export function HotelList({
   skeletonCount = 4,
   emptyMessage = 'Nenhum hotel encontrado.',
   columns = 3,
+  priorityCount = 0,
 }: HotelListProps) {
   const gridCols =
     columns === 2
@@ -44,8 +47,8 @@ export function HotelList({
 
   return (
     <div className={`grid gap-6 ${gridCols}`}>
-      {hotels.map((hotel) => (
-        <HotelCard key={hotel.id} hotel={hotel} />
+      {hotels.map((hotel, index) => (
+        <HotelCard key={hotel.id} hotel={hotel} priority={index < priorityCount} />
       ))}
     </div>
   )

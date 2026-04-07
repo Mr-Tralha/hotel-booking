@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useRef, Suspense } from 'react'
+import { use, useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useHotel } from '@/hooks/queries/use-hotel'
 import { useBookingStore, type SelectedRoom } from '@/stores/booking-store'
@@ -12,6 +12,7 @@ import { HotelReviews } from '@/components/hotel/hotel-reviews'
 import { HotelDetailSkeleton } from '@/components/hotel/hotel-detail-skeleton'
 import { SectionNav } from '@/components/hotel/section-nav'
 import { BookingSummary } from '@/components/hotel/booking-summary'
+import { SearchParamsModal } from '@/components/hotel/search-params-modal'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
@@ -100,6 +101,13 @@ function HotelDetailContent({ hotelId }: { hotelId: number }) {
 }
 
 function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof useHotel>['data']> }) {
+  const searchParams = useSearchParams()
+  const checkIn = searchParams.get('checkIn')
+  const checkOut = searchParams.get('checkOut')
+  const missingParams = !checkIn || !checkOut
+  const [modalDismissed, setModalDismissed] = useState(false)
+  const showModal = missingParams && !modalDismissed
+
   // Sync rooms between URL ↔ store
   useRoomUrlSync(
     hotel.rooms.map((r) => ({ id: r.id, name: r.name, pricePerNight: r.pricePerNight }))
@@ -107,6 +115,10 @@ function HotelDetailLoaded({ hotel }: { hotel: NonNullable<ReturnType<typeof use
 
   return (
     <>
+      {showModal && (
+        <SearchParamsModal onClose={() => setModalDismissed(true)} />
+      )}
+
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8" id="sobre">
         {/* Breadcrumb */}
         <Breadcrumb hotelName={hotel.name} destination={hotel.destination} />

@@ -8,6 +8,7 @@ Sistema completo de busca e reserva de hotéis, desenvolvido como solução do d
 
 - [Stack](#stack)
 - [Como rodar](#como-rodar)
+- [Testes](#testes)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Páginas e funcionalidades](#páginas-e-funcionalidades)
 - [Features avançadas implementadas](#features-avançadas-implementadas)
@@ -29,6 +30,7 @@ Sistema completo de busca e reserva de hotéis, desenvolvido como solução do d
 | Zustand | 5 | Estado global (reserva, histórico, perfil) |
 | React Hook Form | 7 | Formulários com performance |
 | Zod | 4 | Validação de schemas e tipagem |
+| Jest + Testing Library | 30/16 | Testes unitários |
 
 > Nenhuma biblioteca extra foi instalada além das exigidas pelo desafio. Tudo que poderia ser resolvido com CSS nativo, HTML semântico ou APIs do browser foi resolvido assim.
 
@@ -77,6 +79,29 @@ Abre o webpack bundle analyzer automaticamente após o build.
 ```bash
 npm run lint
 ```
+
+---
+
+## Testes
+
+O projeto usa **Jest** com ambiente `jsdom` (via `next/jest`) e **Testing Library** para os testes unitários. Os testes ficam em `__tests__/` espelhando a estrutura de `lib/` e `stores/`.
+
+```bash
+npm run test           # Roda todos os testes
+npm run test:watch     # Modo watch (re-executa ao salvar)
+npm run test:coverage  # Relatório de cobertura
+```
+
+### Suites cobertas
+
+| Suite | Arquivo | Cenários |
+|---|---|---|
+| `lib/utils` | `__tests__/lib/utils.test.ts` | `formatCurrency`, `formatDate`, `toDateInputValue`, `calculateNights`, `calculateTotal`, `cn`, `normalizeText`, `formatCPF`, `formatPhone` |
+| `lib/validations/checkout` | `__tests__/lib/validations/checkout.test.ts` | Schema de dados pessoais (CPF real, telefone, email), schema de pagamento (Luhn, expiração, CVV), schema de revisão |
+| `lib/validations/search` | `__tests__/lib/validations/search.test.ts` | Destino obrigatório, check-in ≥ hoje, check-out ≥ check-in+1, estadia máxima 30 dias, limites de adultos/crianças/quartos |
+| `stores/booking-store` | `__tests__/stores/booking-store.test.ts` | Estado inicial, `setSearchParams`, `toggleRoom` (add/remove/switch hotel), `setSelectedRooms`, `clearRooms`, `reset` |
+
+> **83 testes passando**, 0 falhas.
 
 ---
 
@@ -133,6 +158,15 @@ mocks/
 
 scripts/
   lighthouse-audit.mjs              # Script de auditoria de performance
+
+__tests__/
+  lib/
+    utils.test.ts                   # Helpers de formatação, cálculo e normalização
+    validations/
+      checkout.test.ts              # Schemas Zod do checkout (CPF, Luhn, expiração)
+      search.test.ts                # Schema Zod da busca (datas, hóspedes, quartos)
+  stores/
+    booking-store.test.ts           # Booking store (toggle, reset, isolamento por hotel)
 ```
 
 ---
@@ -283,6 +317,10 @@ Cada store tem responsabilidade única. Stores persistidos usam `skipHydration: 
 
 Todos os schemas Zod são fábricas que recebem uma função `t` de tradução, permitindo mensagens de erro localizadas sem duplicação de lógica. Validações cruzadas (ex: datas) são implementadas como refinamentos Zod.
 
+### Testes unitários
+
+Os testes cobrem as camadas de lógica pura — utilitários, validações e stores — que não dependem de renderização. A configuração usa `next/jest` com ambiente `jsdom`, `@testing-library/jest-dom` para matchers e path alias `@/*` resolvido via `moduleNameMapper`.
+
 ---
 
 ## API
@@ -317,13 +355,16 @@ O backend está implementado como **API Routes do Next.js** em `app/api/`, consu
 ## Scripts disponíveis
 
 ```bash
-npm run dev        # Servidor de desenvolvimento com Turbopack
-npm run build      # Build de produção
-npm run start      # Servidor de produção
-npm run lint       # ESLint
+npm run dev            # Servidor de desenvolvimento
+npm run build          # Build de produção
+npm run start          # Servidor de produção
+npm run lint           # ESLint
+npm run test           # Testes unitários (Jest)
+npm run test:watch     # Testes em modo watch
+npm run test:coverage  # Relatório de cobertura
 ```
 
-Para analysis de bundle:
+Para análise de bundle:
 
 ```bash
 ANALYZE=true npm run build

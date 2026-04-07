@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Hotel } from '@/types/mock-db'
 import type { SelectedRoom } from '@/stores/booking-store'
 
 export interface SavedBooking {

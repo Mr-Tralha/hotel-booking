@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+type T = (key: string) => string
+
 // --- Helpers ---
 
 function isValidCPF(cpf: string): boolean {
@@ -40,71 +42,77 @@ function passesLuhn(number: string): boolean {
 
 // --- Step 1: Personal Data ---
 
-export const personalDataSchema = z.object({
-  fullName: z
-    .string()
-    .min(1, 'Nome completo é obrigatório')
-    .min(3, 'Nome deve ter pelo menos 3 caracteres')
-    .refine((val) => val.trim().includes(' '), {
-      message: 'Informe nome e sobrenome',
-    }),
-  email: z
-    .string()
-    .min(1, 'E-mail é obrigatório')
-    .email('E-mail inválido'),
-  phone: z
-    .string()
-    .min(1, 'Telefone é obrigatório')
-    .regex(/^\(\d{2}\)\s?\d{4,5}-?\d{4}$/, 'Formato: (11) 99999-9999'),
-  cpf: z
-    .string()
-    .min(1, 'CPF é obrigatório')
-    .refine((val) => isValidCPF(val), { message: 'CPF inválido' }),
-})
+export function createPersonalDataSchema(t: T) {
+  return z.object({
+    fullName: z
+      .string()
+      .min(1, t('fullNameRequired'))
+      .min(3, t('fullNameMinLength'))
+      .refine((val) => val.trim().includes(' '), {
+        message: t('fullNameLastName'),
+      }),
+    email: z
+      .string()
+      .min(1, t('emailRequired'))
+      .email(t('emailInvalid')),
+    phone: z
+      .string()
+      .min(1, t('phoneRequired'))
+      .regex(/^\(\d{2}\)\s?\d{4,5}-?\d{4}$/, t('phoneFormat')),
+    cpf: z
+      .string()
+      .min(1, t('cpfRequired'))
+      .refine((val) => isValidCPF(val), { message: t('cpfInvalid') }),
+  })
+}
 
-export type PersonalDataForm = z.infer<typeof personalDataSchema>
+export type PersonalDataForm = z.infer<ReturnType<typeof createPersonalDataSchema>>
 
 // --- Step 2: Payment ---
 
-export const paymentSchema = z.object({
-  cardNumber: z
-    .string()
-    .min(1, 'Número do cartão é obrigatório')
-    .refine((val) => passesLuhn(val), { message: 'Número de cartão inválido' }),
-  cardHolder: z
-    .string()
-    .min(1, 'Nome no cartão é obrigatório')
-    .min(3, 'Nome deve ter pelo menos 3 caracteres')
-    .refine((val) => !/\d/.test(val), { message: 'Nome não pode conter números' }),
-  expiry: z
-    .string()
-    .min(1, 'Validade é obrigatória')
-    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Formato: MM/AA')
-    .refine(
-      (val) => {
-        const [mm, yy] = val.split('/')
-        const month = Number(mm)
-        const year = 2000 + Number(yy)
-        const now = new Date()
-        const expDate = new Date(year, month) // first day of next month
-        return expDate > now
-      },
-      { message: 'Cartão expirado' }
-    ),
-  cvv: z
-    .string()
-    .min(1, 'CVV é obrigatório')
-    .regex(/^\d{3,4}$/, 'CVV deve ter 3 ou 4 dígitos'),
-})
+export function createPaymentSchema(t: T) {
+  return z.object({
+    cardNumber: z
+      .string()
+      .min(1, t('cardNumberRequired'))
+      .refine((val) => passesLuhn(val), { message: t('cardNumberInvalid') }),
+    cardHolder: z
+      .string()
+      .min(1, t('cardHolderRequired'))
+      .min(3, t('cardHolderMinLength'))
+      .refine((val) => !/\d/.test(val), { message: t('cardHolderNoNumbers') }),
+    expiry: z
+      .string()
+      .min(1, t('expiryRequired'))
+      .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, t('expiryFormat'))
+      .refine(
+        (val) => {
+          const [mm, yy] = val.split('/')
+          const month = Number(mm)
+          const year = 2000 + Number(yy)
+          const now = new Date()
+          const expDate = new Date(year, month)
+          return expDate > now
+        },
+        { message: t('expiryExpired') }
+      ),
+    cvv: z
+      .string()
+      .min(1, t('cvvRequired'))
+      .regex(/^\d{3,4}$/, t('cvvFormat')),
+  })
+}
 
-export type PaymentForm = z.infer<typeof paymentSchema>
+export type PaymentForm = z.infer<ReturnType<typeof createPaymentSchema>>
 
 // --- Step 3: Review (only acceptance) ---
 
-export const reviewSchema = z.object({
-  acceptTerms: z.literal(true, {
-    message: 'Você deve aceitar os termos e condições',
-  }),
-})
+export function createReviewSchema(t: T) {
+  return z.object({
+    acceptTerms: z.literal(true, {
+      message: t('acceptTermsRequired'),
+    }),
+  })
+}
 
-export type ReviewForm = z.infer<typeof reviewSchema>
+export type ReviewForm = z.infer<ReturnType<typeof createReviewSchema>>

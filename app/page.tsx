@@ -1,8 +1,13 @@
+'use client'
+
 import { SearchForm } from '@/components/search/search-form'
 import { RecentSearches } from '@/components/search/recent-searches'
 import { FeaturedHotels } from '@/components/hotels/featured-hotels'
+import { useTranslations } from '@/lib/i18n'
 
 export default function Home() {
+  const t = useTranslations('home')
+
   return (
     <main className="flex flex-1 flex-col">
       {/* Hero */}
@@ -18,10 +23,10 @@ export default function Home() {
         />
 
         <h1 className="relative text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-          Encontre a hospedagem ideal
+          {t('heroTitle')}
         </h1>
         <p className="relative mt-3 max-w-md text-base text-blue-100 sm:text-lg">
-          Hotéis, pousadas e resorts com as melhores tarifas em todo o Brasil
+          {t('heroSubtitle')}
         </p>
       </section>
 

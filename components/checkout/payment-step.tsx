@@ -1,10 +1,12 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { paymentSchema, type PaymentForm } from '@/lib/validations/checkout'
+import { createPaymentSchema, type PaymentForm } from '@/lib/validations/checkout'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from '@/lib/i18n'
 
 interface PaymentStepProps {
   defaultValues?: Partial<PaymentForm>
@@ -24,13 +26,18 @@ function formatExpiry(value: string): string {
 }
 
 export function PaymentStep({ defaultValues, onNext, onBack }: PaymentStepProps) {
+  const t = useTranslations('checkout')
+  const tc = useTranslations('common')
+  const tv = useTranslations('validation')
+  const schema = useMemo(() => createPaymentSchema(tv), [tv])
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm<PaymentForm>({
-    resolver: zodResolver(paymentSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       cardNumber: '',
       cardHolder: '',
@@ -42,14 +49,14 @@ export function PaymentStep({ defaultValues, onNext, onBack }: PaymentStepProps)
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-5" noValidate>
-      <h2 className="text-lg font-semibold text-gray-900">Dados de Pagamento</h2>
+      <h2 className="text-lg font-semibold text-gray-900">{t('paymentTitle')}</h2>
       <p className="text-sm text-gray-500">
-        Pagamento simulado — nenhuma cobrança será realizada.
+        {t('paymentSimulated')}
       </p>
 
       <Input
-        label="Número do cartão"
-        placeholder="0000 0000 0000 0000"
+        label={t('cardNumber')}
+        placeholder={t('cardNumberPlaceholder')}
         inputMode="numeric"
         error={errors.cardNumber?.message}
         {...register('cardNumber', {
@@ -60,16 +67,16 @@ export function PaymentStep({ defaultValues, onNext, onBack }: PaymentStepProps)
       />
 
       <Input
-        label="Nome no cartão"
-        placeholder="MARIA DA SILVA"
+        label={t('cardHolder')}
+        placeholder={t('cardHolderPlaceholder')}
         error={errors.cardHolder?.message}
         {...register('cardHolder')}
       />
 
       <div className="grid grid-cols-2 gap-5">
         <Input
-          label="Validade"
-          placeholder="MM/AA"
+          label={t('expiry')}
+          placeholder={t('expiryPlaceholder')}
           inputMode="numeric"
           error={errors.expiry?.message}
           {...register('expiry', {
@@ -80,8 +87,8 @@ export function PaymentStep({ defaultValues, onNext, onBack }: PaymentStepProps)
         />
 
         <Input
-          label="CVV"
-          placeholder="123"
+          label={t('cvv')}
+          placeholder={t('cvvPlaceholder')}
           inputMode="numeric"
           maxLength={4}
           error={errors.cvv?.message}
@@ -91,10 +98,10 @@ export function PaymentStep({ defaultValues, onNext, onBack }: PaymentStepProps)
 
       <div className="flex justify-between pt-2">
         <Button type="button" variant="secondary" size="lg" onClick={onBack}>
-          Voltar
+          {tc('back')}
         </Button>
         <Button type="submit" size="lg">
-          Revisar reserva
+          {t('reviewBooking')}
         </Button>
       </div>
     </form>

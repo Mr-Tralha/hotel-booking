@@ -1,6 +1,7 @@
 'use client'
 
 import { useHotels } from '@/hooks/queries/use-hotels'
+import { useTranslations } from '@/lib/i18n'
 import { HotelList } from './hotel-list'
 
 interface FeaturedHotelsProps {
@@ -8,17 +9,18 @@ interface FeaturedHotelsProps {
 }
 
 export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
+  const t = useTranslations('featured')
   const variant = recommended ? 'recommended' : 'featured'
 
   const config = {
     featured: {
-      title: 'Hotéis em destaque',
-      description: 'Selecionados pela qualidade e avaliações dos hóspedes',
+      title: t('title'),
+      description: t('description'),
       py: 'py-12 sm:py-16',
     },
     recommended: {
-      title: 'Recomendados para você',
-      description: 'Baseado nas suas preferências e tendências',
+      title: t('recommendedTitle'),
+      description: t('recommendedDescription'),
       py: 'py-6 sm:py-8',
     },
   }[variant]
@@ -45,7 +47,7 @@ export function FeaturedHotels({ recommended }: FeaturedHotelsProps) {
         hotels={data?.data}
         isLoading={isLoading}
         skeletonCount={6}
-        emptyMessage="Nenhum hotel disponível no momento."
+        emptyMessage={t('noHotels')}
       />
     </section>
   )

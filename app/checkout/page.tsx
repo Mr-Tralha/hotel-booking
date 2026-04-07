@@ -14,14 +14,11 @@ import { ReviewStep } from '@/components/checkout/review-step'
 import type { PersonalDataForm, PaymentForm } from '@/lib/validations/checkout'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-
-const STEPS = [
-  { label: 'Dados pessoais' },
-  { label: 'Pagamento' },
-  { label: 'Revisão' },
-]
+import { useTranslations } from '@/lib/i18n'
 
 export default function CheckoutPage() {
+  const t = useTranslations('checkout')
+  const tc = useTranslations('common')
   const router = useRouter()
   const hotel = useBookingStore((s) => s.hotel)
   const selectedRooms = useBookingStore((s) => s.selectedRooms)
@@ -112,7 +109,7 @@ export default function CheckoutPage() {
     return (
       <main className="min-h-screen bg-gray-50">
         <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center px-4 py-20 text-center">
-          <p className="text-sm text-gray-500">Redirecionando...</p>
+          <p className="text-sm text-gray-500">{tc('redirecting')}</p>
         </div>
       </main>
     )
@@ -124,10 +121,14 @@ export default function CheckoutPage() {
         {/* Header */}
         <div className="mb-8 space-y-4">
           <Link href="/" className="text-sm text-blue-600 hover:underline">
-            ← Voltar para busca
+            {t('backToSearch')}
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Checkout</h1>
-          <CheckoutSteps steps={STEPS} currentStep={currentStep} />
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{t('title')}</h1>
+          <CheckoutSteps steps={[
+            { label: t('stepPersonalData') },
+            { label: t('stepPayment') },
+            { label: t('stepReview') },
+          ]} currentStep={currentStep} />
         </div>
 
         {/* Content grid */}

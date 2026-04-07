@@ -4,18 +4,21 @@ import { useState } from 'react'
 import { useReviews } from '@/hooks/queries/use-reviews'
 import { Pagination } from '@/components/ui/pagination'
 import { Carousel, CarouselItem } from '@/components/ui/carousel'
+import { useTranslations, useLocale } from '@/lib/i18n'
 
 interface HotelReviewsProps {
   hotelId: number
 }
 
 export function HotelReviews({ hotelId }: HotelReviewsProps) {
+  const t = useTranslations('hotel')
+  const locale = useLocale()
   const [page, setPage] = useState(1)
   const { data, isLoading } = useReviews(hotelId, page)
 
   const title = (
     <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-      Avaliações dos Hóspedes
+      {t('guestReviews')}
     </h2>
   )
 
@@ -27,7 +30,7 @@ export function HotelReviews({ hotelId }: HotelReviewsProps) {
         <>
           {title}
           <p className="text-sm text-gray-500 py-4 mt-4">
-            Nenhuma avaliação disponível para este hotel.
+            {t('noReviews')}
           </p>
         </>
       )}
@@ -50,12 +53,12 @@ export function HotelReviews({ hotelId }: HotelReviewsProps) {
                           </span>
                           {review.verified && (
                             <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                              Verificado
+                              {t('verified')}
                             </span>
                           )}
                         </div>
                         <time className="text-xs text-gray-400" dateTime={review.date}>
-                          {new Date(review.date).toLocaleDateString('pt-BR', {
+                          {new Date(review.date).toLocaleDateString(locale, {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
@@ -79,7 +82,7 @@ export function HotelReviews({ hotelId }: HotelReviewsProps) {
 
                   {review.helpful > 0 && (
                     <p className="mt-2 text-xs text-gray-400">
-                      {review.helpful} {review.helpful === 1 ? 'pessoa achou' : 'pessoas acharam'} útil
+                      {t('helpfulCount', { count: review.helpful })}
                     </p>
                   )}
                 </article>

@@ -1,18 +1,18 @@
 /**
  * Formata valor em reais (BRL)
  */
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
+export function formatCurrency(value: number, locale: string = 'pt-BR'): string {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'BRL',
   }).format(value)
 }
 
 /**
- * Formata data para exibição pt-BR (dd/mm/aaaa)
+ * Formata data para exibição (dd/mm/aaaa)
  */
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('pt-BR').format(date)
+export function formatDate(date: Date, locale: string = 'pt-BR'): string {
+  return new Intl.DateTimeFormat(locale).format(date)
 }
 
 /**

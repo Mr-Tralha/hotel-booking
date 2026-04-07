@@ -1,10 +1,12 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { personalDataSchema, type PersonalDataForm } from '@/lib/validations/checkout'
+import { createPersonalDataSchema, type PersonalDataForm } from '@/lib/validations/checkout'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from '@/lib/i18n'
 
 interface PersonalDataStepProps {
   defaultValues?: Partial<PersonalDataForm>
@@ -28,13 +30,17 @@ function formatPhone(value: string): string {
 }
 
 export function PersonalDataStep({ defaultValues, onNext }: PersonalDataStepProps) {
+  const t = useTranslations('checkout')
+  const tv = useTranslations('validation')
+  const schema = useMemo(() => createPersonalDataSchema(tv), [tv])
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm<PersonalDataForm>({
-    resolver: zodResolver(personalDataSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       fullName: '',
       email: '',
@@ -46,28 +52,28 @@ export function PersonalDataStep({ defaultValues, onNext }: PersonalDataStepProp
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-5" noValidate>
-      <h2 className="text-lg font-semibold text-gray-900">Dados Pessoais</h2>
+      <h2 className="text-lg font-semibold text-gray-900">{t('personalDataTitle')}</h2>
 
       <Input
-        label="Nome completo"
-        placeholder="Maria da Silva"
+        label={t('fullName')}
+        placeholder={t('fullNamePlaceholder')}
         error={errors.fullName?.message}
         {...register('fullName')}
       />
 
       <Input
-        label="E-mail"
+        label={t('email')}
         type="email"
-        placeholder="maria@exemplo.com"
+        placeholder={t('emailPlaceholder')}
         error={errors.email?.message}
         {...register('email')}
       />
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Input
-          label="Telefone"
+          label={t('phone')}
           type="tel"
-          placeholder="(11) 99999-9999"
+          placeholder={t('phonePlaceholder')}
           error={errors.phone?.message}
           {...register('phone', {
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,8 +83,8 @@ export function PersonalDataStep({ defaultValues, onNext }: PersonalDataStepProp
         />
 
         <Input
-          label="CPF"
-          placeholder="000.000.000-00"
+          label={t('cpf')}
+          placeholder={t('cpfPlaceholder')}
           error={errors.cpf?.message}
           {...register('cpf', {
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +96,7 @@ export function PersonalDataStep({ defaultValues, onNext }: PersonalDataStepProp
 
       <div className="flex justify-end pt-2">
         <Button type="submit" size="lg">
-          Continuar para pagamento
+          {t('continueToPayment')}
         </Button>
       </div>
     </form>

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { cn, formatCurrency } from '@/lib/utils'
-import { AMENITY_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/labels'
+import { useTranslations, useLocale } from '@/lib/i18n'
 import type { Hotel } from '@/types/mock-db'
 
 interface HotelCardProps {
@@ -14,6 +14,10 @@ interface HotelCardProps {
 
 export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
   const searchParams = useSearchParams()
+  const t = useTranslations('common')
+  const th = useTranslations('hotel')
+  const tl = useTranslations('labels')
+  const locale = useLocale()
 
   const FORWARDED_PARAMS = ['checkIn', 'checkOut', 'adults', 'children', 'rooms'] as const
   const query = new URLSearchParams()
@@ -41,13 +45,13 @@ export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-xs font-medium text-gray-700 backdrop-blur-sm">
-          {PROPERTY_TYPE_LABELS[hotel.propertyType]}
+          {tl('propertyType.' + hotel.propertyType)}
         </span>
         {hotel.availableRooms != null && hotel.availableRooms <= 3 && (
           <span className="absolute right-3 top-3 rounded-md bg-red-500/90 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
             {hotel.availableRooms === 1
-              ? 'Último quarto!'
-              : `Apenas ${hotel.availableRooms} disponíveis!`}
+              ? th('lastRoom')
+              : th('onlyAvailable', { count: hotel.availableRooms })}
           </span>
         )}
       </div>
@@ -69,7 +73,7 @@ export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
             {(hotel.rating ?? 0).toFixed(1)}
           </span>
           <span className="text-xs text-gray-400">
-            ({(hotel.reviewCount ?? 0).toLocaleString('pt-BR')} avaliações)
+            ({t('reviewCount', { count: (hotel.reviewCount ?? 0).toLocaleString(locale) })})
           </span>
         </div>
 
@@ -80,7 +84,7 @@ export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
               key={amenity}
               className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
             >
-              {AMENITY_LABELS[amenity]}
+              {tl('amenity.' + amenity)}
             </span>
           ))}
           {extraCount > 0 && (
@@ -94,13 +98,13 @@ export function HotelCard({ hotel, hrefOverride }: HotelCardProps) {
         <div className="mt-auto flex items-end justify-between pt-2 border-t border-gray-100">
           <div>
             <span className="text-lg font-bold text-gray-900">
-              {formatCurrency(hotel.pricePerNight ?? 0)}
+              {formatCurrency(hotel.pricePerNight ?? 0, locale)}
             </span>
-            <span className="text-xs text-gray-500"> /noite</span>
+            <span className="text-xs text-gray-500"> {t('perNight')}</span>
           </div>
           {hotel.cancellationPolicy === 'free' && (
             <span className="text-xs font-medium text-green-600">
-              Cancelamento grátis
+              {t('freeCancellation')}
             </span>
           )}
         </div>
